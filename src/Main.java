@@ -2,6 +2,7 @@ package src;
 
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.lukaspradel.steamapi.data.json.ownedgames.Game;
+import src.Modelo.SteamApiService;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;

@@ -1,11 +1,10 @@
-package src;
+package src.Modelo;
 
 import com.lukaspradel.steamapi.core.exception.SteamApiException;
 import com.lukaspradel.steamapi.data.json.ownedgames.GetOwnedGames;
 import com.lukaspradel.steamapi.data.json.ownedgames.Game;
 import com.lukaspradel.steamapi.webapi.client.SteamWebApiClient;
 import com.lukaspradel.steamapi.webapi.request.builders.SteamWebApiRequestFactory;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
