@@ -3,8 +3,7 @@ package src.Controlador;
 import src.Modelo.FavoritesObserver;
 import src.Modelo.FavoritesManager;
 import src.Modelo.SteamApiService;
-import src.Vista.DashboardView;
-import src.Vista.PanelFactory;
+import src.Vista.*;
 
 import com.lukaspradel.steamapi.data.json.ownedgames.Game;
 
@@ -80,6 +79,7 @@ public class DashboardController implements FavoritesObserver {
     private void updateChartType() {
         updateChart();
     }
+
 
 
     @Override
