@@ -1,6 +1,8 @@
 package src.Controlador;
 
 import src.Modelo.FavoritesManager;
+import src.Modelo.SortByPlaytime;
+import src.Modelo.SortStrategy;
 import src.Modelo.SteamApiService;
 import src.Vista.DashboardView;
 import src.Vista.StartView;
@@ -32,7 +34,8 @@ public class StartController {
         // Crear y mostrar el cuadro de mando
         DashboardView dashboardView = new DashboardView();
         FavoritesManager favoritesManager = new FavoritesManager();
-        new DashboardController(steamApiService, favoritesManager, dashboardView, username);
+        SortStrategy sortStrategy = new SortByPlaytime();
+        new DashboardController(steamApiService, favoritesManager, dashboardView, sortStrategy, username);
         dashboardView.show();
 
         // Agregar opción para abrir otro dashboard
