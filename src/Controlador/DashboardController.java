@@ -58,16 +58,23 @@ public class DashboardController implements FavoritesObserver {
 
     private void displayPage() {
         dashboardView.gamesPanel.removeAll();
+        dashboardView.gamesPanel.setLayout(new BorderLayout());
         sortStrategy.sort(games);
+
+        JPanel gamesListPanel = new JPanel();
+        gamesListPanel.setLayout(new BoxLayout(gamesListPanel, BoxLayout.Y_AXIS));
 
         int start = currentPage * PAGE_SIZE;
         int end = Math.min(start + PAGE_SIZE, games.size());
-
         for (int i = start; i < end; i++) {
             Game game = games.get(i);
             JPanel gamePanel = PanelFactory.createGamePanel(game, e -> favoritesManager.addFavorite(game));
-            dashboardView.gamesPanel.add(gamePanel);
+            gamesListPanel.add(gamePanel);
         }
+
+        JScrollPane scrollPane = new JScrollPane(gamesListPanel);
+        scrollPane.setPreferredSize(new Dimension(dashboardView.gamesPanel.getWidth(), 6 * 200)); // Adjust height as needed
+        dashboardView.gamesPanel.add(scrollPane, BorderLayout.CENTER);
 
         dashboardView.gamesPanel.revalidate();
         dashboardView.gamesPanel.repaint();
@@ -134,10 +141,19 @@ public class DashboardController implements FavoritesObserver {
 
     private void displayFriends(List<Player> friends) {
         dashboardView.friendsPanel.removeAll();
+        dashboardView.friendsPanel.setLayout(new BorderLayout());
+
+        JPanel friendsListPanel = new JPanel();
+        friendsListPanel.setLayout(new BoxLayout(friendsListPanel, BoxLayout.Y_AXIS));
+
         for (Player friend : friends) {
             JPanel friendPanel = PanelFactory.createFriendPanel(friend);
-            dashboardView.friendsPanel.add(friendPanel);
+            friendsListPanel.add(friendPanel);
         }
+
+        JScrollPane scrollPane = new JScrollPane(friendsListPanel);
+        scrollPane.setPreferredSize(new Dimension(dashboardView.friendsPanel.getWidth(), 4 * 100)); // Assuming each friend panel is 100px high
+        dashboardView.friendsPanel.add(scrollPane, BorderLayout.CENTER);
 
         dashboardView.friendsPanel.revalidate();
         dashboardView.friendsPanel.repaint();
