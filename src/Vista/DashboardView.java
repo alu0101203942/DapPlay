@@ -1,3 +1,4 @@
+// src/Vista/DashboardView.java
 package src.Vista;
 
 import com.formdev.flatlaf.FlatDarkLaf;
@@ -8,7 +9,7 @@ import java.awt.*;
 public class DashboardView {
     public JFrame frame;
     public JPanel favoritesPanel, gamesPanel, statsPanel, achievementsPanel, friendsPanel, favoritesInfoPanel;
-    public JButton nextButton, prevButton; // Añadido prevButton para navegación anterior.
+    public JButton nextButton, prevButton;
     public JComboBox<String> sortComboBox;
     public JButton openNewDashboardButton;
     public JComboBox<String> chartTypeComboBox;
@@ -20,6 +21,12 @@ public class DashboardView {
         } catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
         }
+
+        // Configuración de la interfaz gráfica (GUI)
+        frame = new JFrame("Steam Dashboard");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(1200, 800); // Tamaño ajustado para acomodar todos los paneles
+        frame.setLayout(new BorderLayout());
 
         // Configuración de la interfaz gráfica (GUI)
         frame = new JFrame("Steam Dashboard");
