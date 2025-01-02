@@ -1,14 +1,14 @@
 package src;
 
-import src.Controlador.DashboardController;
+import src.Controlador.StartController;
 import src.Modelo.SteamApiService;
-import src.Vista.DashboardView;
+import src.Vista.StartView;
 
 public class Main {
     public static void main(String[] args) {
         SteamApiService service = new SteamApiService("06166564FA99EDCBCEDAFFF71732218B");
-        DashboardView view = new DashboardView();
-        new DashboardController(service, view);
+        StartView view = new StartView();
+        new StartController(service, view);
         view.show();
     }
 }

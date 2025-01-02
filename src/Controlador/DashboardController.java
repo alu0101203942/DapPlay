@@ -4,6 +4,7 @@ import src.Modelo.SteamApiService;
 import src.Vista.DashboardView;
 
 import com.lukaspradel.steamapi.data.json.ownedgames.Game;
+import src.Vista.StartView;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -19,7 +20,7 @@ import javax.swing.*;
 
 public class DashboardController {
     private final SteamApiService steamApiService;
-    private final DashboardView mainView;
+    private final DashboardView dashboardView;
     private final String username;
     private List<Game> games;
     private int currentPage = 0;
@@ -28,13 +29,12 @@ public class DashboardController {
 
     public DashboardController(SteamApiService service, DashboardView view, String username) {
         this.steamApiService = service;
-        this.mainView = view;
+        this.dashboardView = view;
         this.username = username;
 
         // Configurar botón de siguiente
-        mainView.nextButton.addActionListener(e -> nextPage());
-        mainView.prevButton.addActionListener(e -> prevPage());
-
+        dashboardView.nextButton.addActionListener(e -> nextPage());
+        dashboardView.prevButton.addActionListener(e -> prevPage());
         // Cargar juegos del usuario al iniciar el cuadro de mando
         fetchGames();
     }
@@ -46,15 +46,15 @@ public class DashboardController {
             currentPage = 0;
             displayPage();
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(mainView.frame, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(dashboardView.frame, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void displayPage() {
-        mainView.gamesPanel.removeAll();
+        dashboardView.gamesPanel.removeAll();
 
         if (games == null || games.isEmpty()) {
-            mainView.gamesPanel.add(new JLabel("No games found."));
+            dashboardView.gamesPanel.add(new JLabel("No games found."));
         } else {
             // Ordenar juegos
             games.sort(Comparator.comparingLong(Game::getPlaytimeForever).reversed());
@@ -97,12 +97,12 @@ public class DashboardController {
                 textPanel.add(favoriteButton);
 
                 gamePanel.add(textPanel, BorderLayout.CENTER);
-                mainView.gamesPanel.add(gamePanel);
+                dashboardView.gamesPanel.add(gamePanel);
             }
         }
 
-        mainView.gamesPanel.revalidate();
-        mainView.gamesPanel.repaint();
+        dashboardView.gamesPanel.revalidate();
+        dashboardView.gamesPanel.repaint();
     }
 
     private void addFavorite(Game game) {
@@ -113,7 +113,7 @@ public class DashboardController {
     }
 
     private void updateFavoritesPanel() {
-        mainView.favoritesPanel.removeAll();
+        dashboardView.favoritesPanel.removeAll();
 
         for (Game game : favoriteGames) {
             JPanel favoritePanel = new JPanel();
@@ -126,11 +126,11 @@ public class DashboardController {
             favoritePanel.add(gameLabel, BorderLayout.CENTER);
             favoritePanel.add(removeButton, BorderLayout.EAST);
 
-            mainView.favoritesPanel.add(favoritePanel);
+            dashboardView.favoritesPanel.add(favoritePanel);
         }
 
-        mainView.favoritesPanel.revalidate();
-        mainView.favoritesPanel.repaint();
+        dashboardView.favoritesPanel.revalidate();
+        dashboardView.favoritesPanel.repaint();
     }
 
     private void removeFavorite(Game game) {
@@ -143,7 +143,7 @@ public class DashboardController {
             currentPage++;
             displayPage();
         } else {
-            JOptionPane.showMessageDialog(mainView.frame, "No more games to display.", "Info", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(dashboardView.frame, "No more games to display.", "Info", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
@@ -152,7 +152,7 @@ public class DashboardController {
             currentPage--;
             displayPage();
         } else {
-            JOptionPane.showMessageDialog(mainView.frame, "You are on the first page.", "Info", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(dashboardView.frame, "You are on the first page.", "Info", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
