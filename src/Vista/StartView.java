@@ -41,9 +41,6 @@ public class StartView {
         nextButton = new JButton("Siguiente");
         nextButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        nextButton.addActionListener(this::onNextButtonPressed);
-        usernameField.addActionListener(this::onNextButtonPressed);
-
         panel.add(titleLabel);
         panel.add(Box.createRigidArea(new Dimension(0, 10)));
         panel.add(usernameField);
@@ -53,14 +50,6 @@ public class StartView {
         frame.add(panel, BorderLayout.CENTER);
     }
 
-    private void onNextButtonPressed(ActionEvent e) {
-        String username = usernameField.getText();
-        if (username.isEmpty()) {
-            JOptionPane.showMessageDialog(frame, "Por favor, ingrese un nombre de usuario.", "Error", JOptionPane.ERROR_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(frame, "Nombre de usuario ingresado: " + username, "Información", JOptionPane.INFORMATION_MESSAGE);
-        }
-    }
 
     public void show() {
         frame.setVisible(true);

@@ -1,38 +1,48 @@
 package src.Controlador;
 
+import src.Modelo.*;
 import src.Modelo.SteamApiService;
 import src.Vista.DashboardView;
+import src.Vista.PanelFactory;
 
 import com.lukaspradel.steamapi.data.json.ownedgames.Game;
+
 import java.awt.*;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Comparator;
+import com.lukaspradel.steamapi.data.json.friendslist.Friend;
+import com.lukaspradel.steamapi.data.json.playersummaries.*;
 import java.util.List;
-import javax.imageio.ImageIO;
 import javax.swing.*;
 
 
-public class DashboardController {
+public class DashboardController implements FavoritesObserver {
     private final SteamApiService steamApiService;
     private final DashboardView dashboardView;
     private final String username;
     private List<Game> games;
+    private List<Friend> friends;
+    private List<Player> players;
     private int currentPage = 0;
     private static final int PAGE_SIZE = 6;
-    private List<Game> favoriteGames = new ArrayList<>(); // Lista de juegos favoritos
+    private final FavoritesManager favoritesManager;
+    private SortStrategy sortStrategy;
 
-    public DashboardController(SteamApiService service, DashboardView view, String username) {
+    public DashboardController(SteamApiService service, FavoritesManager favoritesManager, DashboardView view, SortStrategy sortStrategy, String username) {
         this.steamApiService = service;
+        this.favoritesManager = favoritesManager;
         this.dashboardView = view;
         this.username = username;
+        this.sortStrategy = sortStrategy;
 
-        // Configurar botón de siguiente
+        favoritesManager.addObserver(this);
+
+        fetchGames();
+        fetchFriends();
+        updateChart();
+
         dashboardView.nextButton.addActionListener(e -> nextPage());
         dashboardView.prevButton.addActionListener(e -> prevPage());
-        // Cargar juegos del usuario al iniciar el cuadro de mando
-        fetchGames();
+        dashboardView.sortComboBox.addActionListener(e -> updateSortStrategy());
+        dashboardView.chartTypeComboBox.addActionListener(e -> updateChartType());
     }
 
     private void fetchGames() {
@@ -48,90 +58,49 @@ public class DashboardController {
 
     private void displayPage() {
         dashboardView.gamesPanel.removeAll();
+        sortStrategy.sort(games);
 
-        if (games == null || games.isEmpty()) {
-            dashboardView.gamesPanel.add(new JLabel("No games found."));
-        } else {
-            // Ordenar juegos
-            games.sort(Comparator.comparingLong(Game::getPlaytimeForever).reversed());
+        int start = currentPage * PAGE_SIZE;
+        int end = Math.min(start + PAGE_SIZE, games.size());
 
-            int start = currentPage * PAGE_SIZE;
-            int end = Math.min(start + PAGE_SIZE, games.size());
-            for (int i = start; i < end; i++) {
-                Game game = games.get(i);
-
-                JPanel gamePanel = new JPanel();
-                gamePanel.setLayout(new BorderLayout());
-                gamePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-
-                // Cargar la imagen del juego
-                String imageUrl = "http://media.steampowered.com/steamcommunity/public/images/apps/"
-                        + game.getAppid() + "/" + game.getImgIconUrl() + ".jpg";
-                try {
-                    URL url = new URL(imageUrl);
-                    Image image = ImageIO.read(url);
-                    if (image != null) {
-                        ImageIcon icon = new ImageIcon(image);
-                        JLabel imageLabel = new JLabel(icon);
-                        gamePanel.add(imageLabel, BorderLayout.WEST);
-                    } else {
-                        gamePanel.add(new JLabel("No Image"), BorderLayout.WEST);
-                    }
-                } catch (IOException ex) {
-                    gamePanel.add(new JLabel("Failed to load image"), BorderLayout.WEST);
-                }
-
-                // Añadir el nombre y tiempo de juego
-                JPanel textPanel = new JPanel();
-                textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
-                textPanel.add(new JLabel("Game: " + game.getName()));
-                textPanel.add(new JLabel("Playtime (hours): " + game.getPlaytimeForever() / 60.0));
-
-                // Botón para marcar como favorito
-                JButton favoriteButton = new JButton("Añadir a Favoritos");
-                favoriteButton.addActionListener(e -> addFavorite(game));
-                textPanel.add(favoriteButton);
-
-                gamePanel.add(textPanel, BorderLayout.CENTER);
-                dashboardView.gamesPanel.add(gamePanel);
-            }
+        for (int i = start; i < end; i++) {
+            Game game = games.get(i);
+            JPanel gamePanel = PanelFactory.createGamePanel(game, e -> favoritesManager.addFavorite(game));
+            dashboardView.gamesPanel.add(gamePanel);
         }
 
         dashboardView.gamesPanel.revalidate();
         dashboardView.gamesPanel.repaint();
     }
 
-    private void addFavorite(Game game) {
-        if (!favoriteGames.contains(game)) {
-            favoriteGames.add(game);
-            updateFavoritesPanel();
-        }
+    private void updateChart() {
+        dashboardView.statsPanel.removeAll();
+        dashboardView.statsPanel.add(dashboardView.chartTypeComboBox, BorderLayout.NORTH);
+
+        String selectedType = (String) dashboardView.chartTypeComboBox.getSelectedItem();
+        JPanel chartPanel = PanelFactory.createChart(selectedType, favoritesManager.getFavoriteGames());
+
+        dashboardView.statsPanel.add(chartPanel, BorderLayout.CENTER);
+        dashboardView.statsPanel.revalidate();
+        dashboardView.statsPanel.repaint();
     }
 
-    private void updateFavoritesPanel() {
+    private void updateChartType() {
+        updateChart();
+    }
+
+
+    @Override
+    public void onFavoritesUpdated(List<Game> favoriteGames) {
         dashboardView.favoritesPanel.removeAll();
-
         for (Game game : favoriteGames) {
-            JPanel favoritePanel = new JPanel();
-            favoritePanel.setLayout(new BorderLayout());
-            JLabel gameLabel = new JLabel(game.getName());
-
-            JButton removeButton = new JButton("Eliminar");
-            removeButton.addActionListener(e -> removeFavorite(game));
-
-            favoritePanel.add(gameLabel, BorderLayout.CENTER);
-            favoritePanel.add(removeButton, BorderLayout.EAST);
-
+            JPanel favoritePanel = PanelFactory.createFavoritePanel(game, e -> favoritesManager.removeFavorite(game));
             dashboardView.favoritesPanel.add(favoritePanel);
         }
 
         dashboardView.favoritesPanel.revalidate();
         dashboardView.favoritesPanel.repaint();
-    }
-
-    private void removeFavorite(Game game) {
-        favoriteGames.remove(game);
-        updateFavoritesPanel();
+        updateChart();
     }
 
     private void nextPage() {
@@ -152,5 +121,35 @@ public class DashboardController {
         }
     }
 
+    private void fetchFriends() {
+        try {
+            String steamId64 = steamApiService.getSteamIdFromUsername(username);
+            friends = steamApiService.getFriends(steamId64);
+            players = steamApiService.getPlayerSummaries(friends.toString());
+            displayFriends(players);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(dashboardView.frame, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
+    private void displayFriends(List<Player> friends) {
+        dashboardView.friendsPanel.removeAll();
+        for (Player friend : friends) {
+            JPanel friendPanel = PanelFactory.createFriendPanel(friend);
+            dashboardView.friendsPanel.add(friendPanel);
+        }
+
+        dashboardView.friendsPanel.revalidate();
+        dashboardView.friendsPanel.repaint();
+    }
+
+    private void updateSortStrategy() {
+        String selectedStrategy = (String) dashboardView.sortComboBox.getSelectedItem();
+        if ("Sort by Name".equals(selectedStrategy)) {
+            sortStrategy = new SortByName();
+        } else if ("Sort by Playtime".equals(selectedStrategy)) {
+            sortStrategy = new SortByPlaytime();
+        }
+        displayPage();
+    }
 }

@@ -9,6 +9,9 @@ public class DashboardView {
     public JFrame frame;
     public JPanel favoritesPanel, gamesPanel, statsPanel, achievementsPanel, friendsPanel, favoritesInfoPanel;
     public JButton nextButton, prevButton; // Añadido prevButton para navegación anterior.
+    public JComboBox<String> sortComboBox;
+    public JButton openNewDashboardButton;
+    public JComboBox<String> chartTypeComboBox;
 
     public DashboardView() {
         // Set FlatDarkLaf look and feel
@@ -33,11 +36,20 @@ public class DashboardView {
         favoritesPanel.setLayout(new BoxLayout(favoritesPanel, BoxLayout.Y_AXIS));
         favoritesPanel.setBorder(BorderFactory.createTitledBorder("Juegos Favoritos"));
 
+        // Envolver favoritesPanel en un JScrollPane
+        JScrollPane favoritesScrollPane = new JScrollPane(favoritesPanel);
+        favoritesScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        favoritesScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
         gamesPanel = new JPanel();
         gamesPanel.setBorder(BorderFactory.createTitledBorder("Juegos del Usuario"));
+        gamesPanel.setLayout(new GridLayout(5, 1, 10, 10));
 
         statsPanel = new JPanel();
-        statsPanel.setBorder(BorderFactory.createTitledBorder("Gráficos de Tiempo"));
+        chartTypeComboBox = new JComboBox<>(new String[]{"Gráfico de Barras","Gráfico de Sectores"});
+        statsPanel.add(chartTypeComboBox, BorderLayout.NORTH);
+        chartTypeComboBox.setSelectedIndex(0);
+
 
         friendsPanel = new JPanel();
         friendsPanel.setBorder(BorderFactory.createTitledBorder("Lista de Amigos"));
@@ -49,7 +61,7 @@ public class DashboardView {
         achievementsPanel.setBorder(BorderFactory.createTitledBorder("Logros Desbloqueados"));
 
         // Añadir los paneles al layout del cuadro de mando
-        dashboardPanel.add(favoritesPanel);
+        dashboardPanel.add(favoritesScrollPane);
         dashboardPanel.add(statsPanel);
         dashboardPanel.add(friendsPanel);
         dashboardPanel.add(favoritesInfoPanel);
@@ -60,8 +72,12 @@ public class DashboardView {
         JPanel navigationPanel = new JPanel();
         prevButton = new JButton("Anterior");
         nextButton = new JButton("Siguiente");
+        openNewDashboardButton = new JButton("Abrir Nuevo Dashboard");
         navigationPanel.add(prevButton);
         navigationPanel.add(nextButton);
+        navigationPanel.add(openNewDashboardButton);
+        sortComboBox = new JComboBox<>(new String[]{"Sort by Name", "Sort by Playtime"});
+        navigationPanel.add(sortComboBox);
 
         // Agregar paneles al marco principal
         frame.add(dashboardPanel, BorderLayout.CENTER);
