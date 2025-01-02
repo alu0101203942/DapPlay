@@ -16,14 +16,14 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 
 
-public class MainController {
+public class StartController {
     private final SteamApiService steamApiService;
     private final MainView mainView;
     private List<Game> games;
     private int currentPage = 0;
     private static final int PAGE_SIZE = 6;
 
-    public MainController(SteamApiService steamApiService, MainView mainView) {
+    public StartController(SteamApiService steamApiService, MainView mainView) {
         this.steamApiService = steamApiService;
         this.mainView = mainView;
 
