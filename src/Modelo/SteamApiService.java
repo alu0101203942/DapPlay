@@ -1,24 +1,37 @@
 package src.Modelo;
 
 import com.lukaspradel.steamapi.core.exception.SteamApiException;
-import com.lukaspradel.steamapi.data.json.ownedgames.GetOwnedGames;
+import com.lukaspradel.steamapi.data.json.friendslist.Friend;
+import com.lukaspradel.steamapi.data.json.friendslist.GetFriendList;
+import com.lukaspradel.steamapi.data.json.playersummaries.*;
 import com.lukaspradel.steamapi.data.json.ownedgames.Game;
+import com.lukaspradel.steamapi.data.json.ownedgames.GetOwnedGames;
 import com.lukaspradel.steamapi.webapi.client.SteamWebApiClient;
+import com.lukaspradel.steamapi.webapi.request.GetFriendListRequest;
 import com.lukaspradel.steamapi.webapi.request.builders.SteamWebApiRequestFactory;
-import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.List;
 
+import org.json.JSONObject;
+
 public class SteamApiService {
+    private static SteamApiService instance;
     private final String apiKey;
 
-    public SteamApiService(String apiKey) {
+    private SteamApiService(String apiKey) {
         this.apiKey = apiKey;
+    }
+
+    public static SteamApiService getInstance(String apiKey) {
+        if (instance == null) {
+            instance = new SteamApiService(apiKey);
+        }
+        return instance;
     }
 
     public String getSteamIdFromUsername(String username) throws SteamApiException {
@@ -54,6 +67,35 @@ public class SteamApiService {
 
         if (ownedGames != null && ownedGames.getResponse() != null) {
             return ownedGames.getResponse().getGames();
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    public List<Friend> getFriends(String steamId64) throws SteamApiException {
+        SteamWebApiClient client = new SteamWebApiClient.SteamWebApiClientBuilder(apiKey).build();
+
+        var request = SteamWebApiRequestFactory.createGetFriendListRequest(
+                steamId64,
+                GetFriendListRequest.Relationship.FRIEND
+        );
+
+        GetFriendList friendList = client.processRequest(request);
+
+        if (friendList != null && friendList.getFriendslist() != null) {
+            return friendList.getFriendslist().getFriends();
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    public List<Player> getPlayerSummaries(String steamId64) throws SteamApiException {
+        SteamWebApiClient client = new SteamWebApiClient.SteamWebApiClientBuilder(apiKey).build();
+        var request = SteamWebApiRequestFactory.createGetPlayerSummariesRequest(Collections.singletonList(steamId64));
+        GetPlayerSummaries playerSummaries = client.processRequest(request);
+
+        if (playerSummaries != null && playerSummaries.getResponse() != null) {
+            return playerSummaries.getResponse().getPlayers();
         } else {
             return Collections.emptyList();
         }
