@@ -2,26 +2,62 @@ package src.Vista;
 
 import com.lukaspradel.steamapi.data.json.ownedgames.Game;
 
-
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
-
+import java.io.IOException;
+import java.net.URL;
 
 public class PanelFactory {
     public static JPanel createGamePanel(Game game, ActionListener favoriteAction) {
         JPanel gamePanel = new JPanel(new BorderLayout());
         gamePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
+        // Cargar la imagen del juego
+        String imageUrl = "http://media.steampowered.com/steamcommunity/public/images/apps/"
+                + game.getAppid() + "/" + game.getImgIconUrl() + ".jpg";
+        try {
+            URL url = new URL(imageUrl);
+            Image image = ImageIO.read(url);
+            if (image != null) {
+                ImageIcon icon = new ImageIcon(image);
+                JLabel imageLabel = new JLabel(icon);
+                gamePanel.add(imageLabel, BorderLayout.WEST);
+            } else {
+                gamePanel.add(new JLabel("No Image"), BorderLayout.WEST);
+            }
+        } catch (IOException ex) {
+            gamePanel.add(new JLabel("Failed to load image"), BorderLayout.WEST);
+        }
+
+        // Añadir el nombre y tiempo de juego
+        JPanel textPanel = new JPanel();
+        textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
+        textPanel.add(new JLabel("Game: " + game.getName()));
+        textPanel.add(new JLabel("Playtime (hours): " + game.getPlaytimeForever() / 60.0));
+
+        // Botón para marcar como favorito
+        JButton favoriteButton = new JButton("Añadir a Favoritos");
+        favoriteButton.addActionListener(favoriteAction);
+        textPanel.add(favoriteButton);
+
+        gamePanel.add(textPanel, BorderLayout.CENTER);
 
         return gamePanel;
     }
     public static JPanel createFavoritePanel(Game game, ActionListener removeAction) {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        JPanel favoritepanel = new JPanel(new BorderLayout());
+        favoritepanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
+        JLabel label = new JLabel(game.getName());
+        favoritepanel.add(label, BorderLayout.CENTER);
 
-        return panel;
+        JButton removeButton = new JButton("Eliminar");
+        removeButton.addActionListener(removeAction);
+        favoritepanel.add(removeButton, BorderLayout.EAST);
+
+        return favoritepanel;
     }
 
 }
