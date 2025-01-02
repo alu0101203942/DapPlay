@@ -7,6 +7,8 @@ import src.Vista.DashboardView;
 import src.Vista.PanelFactory;
 
 import com.lukaspradel.steamapi.data.json.ownedgames.Game;
+
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
@@ -30,9 +32,11 @@ public class DashboardController implements FavoritesObserver {
         favoritesManager.addObserver(this);
 
         fetchGames();
+        updateChart();
 
         dashboardView.nextButton.addActionListener(e -> nextPage());
         dashboardView.prevButton.addActionListener(e -> prevPage());
+        dashboardView.chartTypeComboBox.addActionListener(e -> updateChartType());
     }
 
     private void fetchGames() {
@@ -62,6 +66,22 @@ public class DashboardController implements FavoritesObserver {
         dashboardView.gamesPanel.repaint();
     }
 
+    private void updateChart() {
+        dashboardView.statsPanel.removeAll();
+        dashboardView.statsPanel.add(dashboardView.chartTypeComboBox, BorderLayout.NORTH);
+
+        String selectedType = (String) dashboardView.chartTypeComboBox.getSelectedItem();
+        JPanel chartPanel = PanelFactory.createChart(selectedType, favoritesManager.getFavoriteGames());
+
+        dashboardView.statsPanel.add(chartPanel, BorderLayout.CENTER);
+        dashboardView.statsPanel.revalidate();
+        dashboardView.statsPanel.repaint();
+    }
+
+    private void updateChartType() {
+        updateChart();
+    }
+
 
     @Override
     public void onFavoritesUpdated(List<Game> favoriteGames) {
@@ -73,6 +93,7 @@ public class DashboardController implements FavoritesObserver {
 
         dashboardView.favoritesPanel.revalidate();
         dashboardView.favoritesPanel.repaint();
+        updateChart();
     }
 
     private void nextPage() {

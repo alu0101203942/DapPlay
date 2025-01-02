@@ -10,6 +10,7 @@ public class DashboardView {
     public JPanel favoritesPanel, gamesPanel, statsPanel, achievementsPanel, friendsPanel, favoritesInfoPanel;
     public JButton nextButton, prevButton; // Añadido prevButton para navegación anterior.
     public JButton openNewDashboardButton;
+    public JComboBox<String> chartTypeComboBox;
 
     public DashboardView() {
         // Set FlatDarkLaf look and feel
@@ -38,7 +39,10 @@ public class DashboardView {
         gamesPanel.setBorder(BorderFactory.createTitledBorder("Juegos del Usuario"));
 
         statsPanel = new JPanel();
-        statsPanel.setBorder(BorderFactory.createTitledBorder("Gráficos de Tiempo"));
+        chartTypeComboBox = new JComboBox<>(new String[]{"Gráfico de Barras","Gráfico de Sectores"});
+        statsPanel.add(chartTypeComboBox, BorderLayout.NORTH);
+        chartTypeComboBox.setSelectedIndex(0);
+
 
         friendsPanel = new JPanel();
         friendsPanel.setBorder(BorderFactory.createTitledBorder("Lista de Amigos"));

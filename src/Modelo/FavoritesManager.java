@@ -30,4 +30,8 @@ public class FavoritesManager {
             observer.onFavoritesUpdated(favoriteGames);
         }
     }
+
+    public List<Game> getFavoriteGames() {
+        return new ArrayList<>(favoriteGames);
+    }
 }
