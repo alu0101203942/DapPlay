@@ -9,6 +9,7 @@ public class DashboardView {
     public JFrame frame;
     public JPanel favoritesPanel, gamesPanel, statsPanel, achievementsPanel, friendsPanel, favoritesInfoPanel;
     public JButton nextButton, prevButton; // Añadido prevButton para navegación anterior.
+    public JButton openNewDashboardButton;
 
     public DashboardView() {
         // Set FlatDarkLaf look and feel
@@ -60,8 +61,10 @@ public class DashboardView {
         JPanel navigationPanel = new JPanel();
         prevButton = new JButton("Anterior");
         nextButton = new JButton("Siguiente");
+        openNewDashboardButton = new JButton("Abrir Nuevo Dashboard");
         navigationPanel.add(prevButton);
         navigationPanel.add(nextButton);
+        navigationPanel.add(openNewDashboardButton);
 
         // Agregar paneles al marco principal
         frame.add(dashboardPanel, BorderLayout.CENTER);
