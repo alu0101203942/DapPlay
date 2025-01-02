@@ -4,11 +4,7 @@ import src.Modelo.SteamApiService;
 import src.Vista.DashboardView;
 
 import com.lukaspradel.steamapi.data.json.ownedgames.Game;
-import src.Vista.StartView;
-
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
