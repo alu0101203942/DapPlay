@@ -9,7 +9,6 @@ import src.Vista.PanelFactory;
 import com.lukaspradel.steamapi.data.json.ownedgames.Game;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 
