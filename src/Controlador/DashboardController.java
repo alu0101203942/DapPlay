@@ -7,13 +7,8 @@ import src.Vista.DashboardView;
 import src.Vista.PanelFactory;
 
 import com.lukaspradel.steamapi.data.json.ownedgames.Game;
-import java.awt.*;
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import javax.imageio.ImageIO;
 import javax.swing.*;
 
 
@@ -24,7 +19,6 @@ public class DashboardController implements FavoritesObserver {
     private List<Game> games;
     private int currentPage = 0;
     private static final int PAGE_SIZE = 6;
-    private List<Game> favoriteGames = new ArrayList<>(); // Lista de juegos favoritos
     private final FavoritesManager favoritesManager;
 
     public DashboardController(SteamApiService service, FavoritesManager favoritesManager, DashboardView view, String username) {
