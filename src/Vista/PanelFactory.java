@@ -1,7 +1,7 @@
 package src.Vista;
 
 import com.lukaspradel.steamapi.data.json.ownedgames.Game;
-
+import com.lukaspradel.steamapi.data.json.playersummaries.Player;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -12,9 +12,11 @@ import java.net.URL;
 import java.util.List;
 
 public class PanelFactory {
+    private static final int MARGIN = 10;
+
     public static JPanel createGamePanel(Game game, ActionListener favoriteAction) {
         JPanel gamePanel = new JPanel(new BorderLayout());
-        gamePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        gamePanel.setBorder(BorderFactory.createEmptyBorder(MARGIN, MARGIN, MARGIN, MARGIN));
 
         // Cargar la imagen del juego
         String imageUrl = "http://media.steampowered.com/steamcommunity/public/images/apps/"
@@ -63,6 +65,35 @@ public class PanelFactory {
         return favoritepanel;
     }
 
+    public static JPanel createFriendPanel(Player friendList) {
+        JPanel friendPanel = new JPanel(new BorderLayout());
+        friendPanel.setBorder(BorderFactory.createEmptyBorder(MARGIN, MARGIN, MARGIN, MARGIN));
+
+        // Cargar la imagen del amigo
+        String imageUrl = friendList.getAvatar();
+        try {
+            URL url = new URL(imageUrl);
+            Image image = ImageIO.read(url);
+            if (image != null) {
+                ImageIcon icon = new ImageIcon(image);
+                JLabel imageLabel = new JLabel(icon);
+                friendPanel.add(imageLabel, BorderLayout.WEST);
+            } else {
+                friendPanel.add(new JLabel("No Image"), BorderLayout.WEST);
+            }
+        } catch (IOException ex) {
+            friendPanel.add(new JLabel("Failed to load image"), BorderLayout.WEST);
+        }
+
+        // Añadir el nombre del amigo
+        JPanel textPanel = new JPanel();
+        textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
+        textPanel.add(new JLabel("Name: " + friendList.getPersonaname()));
+
+        friendPanel.add(textPanel, BorderLayout.CENTER);
+
+        return friendPanel;
+    }
     public static JPanel createChart(String chartType, List<Game> games) {
         ChartStrategy chartStrategy;
         switch (chartType) {
