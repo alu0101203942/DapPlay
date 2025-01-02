@@ -1,7 +1,6 @@
 package src.Controlador;
 
-import src.Modelo.FavoritesObserver;
-import src.Modelo.FavoritesManager;
+import src.Modelo.*;
 import src.Modelo.SteamApiService;
 import src.Vista.DashboardView;
 import src.Vista.PanelFactory;
