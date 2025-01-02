@@ -1,5 +1,6 @@
 package src.Controlador;
 
+import src.Modelo.FavoritesManager;
 import src.Modelo.SteamApiService;
 import src.Vista.DashboardView;
 import src.Vista.StartView;
@@ -30,7 +31,18 @@ public class StartController {
 
         // Crear y mostrar el cuadro de mando
         DashboardView dashboardView = new DashboardView();
-        new DashboardController(steamApiService, dashboardView, username);
+        FavoritesManager favoritesManager = new FavoritesManager();
+        new DashboardController(steamApiService, favoritesManager, dashboardView, username);
         dashboardView.show();
+
+        // Agregar opción para abrir otro dashboard
+        dashboardView.openNewDashboardButton.addActionListener(e -> openNewDashboard());
+    }
+
+    private void openNewDashboard() {
+        // Mostrar la pantalla de inicio nuevamente para otro usuario
+        StartView newStartView = new StartView();
+        new StartController(steamApiService, newStartView);
+        newStartView.show();
     }
 }
