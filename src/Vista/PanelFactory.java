@@ -1,6 +1,11 @@
 package src.Vista;
 
 import com.lukaspradel.steamapi.data.json.ownedgames.Game;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.DefaultPieDataset;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -8,6 +13,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 
 public class PanelFactory {
     public static JPanel createGamePanel(Game game, ActionListener favoriteAction) {
@@ -46,6 +52,7 @@ public class PanelFactory {
 
         return gamePanel;
     }
+
     public static JPanel createFavoritePanel(Game game, ActionListener removeAction) {
         JPanel favoritepanel = new JPanel(new BorderLayout());
         favoritepanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -59,5 +66,21 @@ public class PanelFactory {
 
         return favoritepanel;
     }
+
+    public static JPanel createChart(String chartType, List<Game> games) {
+        ChartStrategy chartStrategy;
+        switch (chartType) {
+            case "Gráfico de Barras":
+                chartStrategy = new BarChartStrategy();
+                break;
+            case "Gráfico de Sectores":
+                chartStrategy = new PieChartStrategy();
+                break;
+            default:
+                throw new IllegalArgumentException("Tipo de gráfico no soportado: " + chartType);
+        }
+        return chartStrategy.createChart(games);
+    }
+
 
 }
