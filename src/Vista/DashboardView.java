@@ -35,8 +35,14 @@ public class DashboardView {
         favoritesPanel.setLayout(new BoxLayout(favoritesPanel, BoxLayout.Y_AXIS));
         favoritesPanel.setBorder(BorderFactory.createTitledBorder("Juegos Favoritos"));
 
+        // Envolver favoritesPanel en un JScrollPane
+        JScrollPane favoritesScrollPane = new JScrollPane(favoritesPanel);
+        favoritesScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        favoritesScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
         gamesPanel = new JPanel();
         gamesPanel.setBorder(BorderFactory.createTitledBorder("Juegos del Usuario"));
+        gamesPanel.setLayout(new GridLayout(5, 1, 10, 10));
 
         statsPanel = new JPanel();
         statsPanel.setBorder(BorderFactory.createTitledBorder("Gráficos de Tiempo"));
@@ -51,7 +57,7 @@ public class DashboardView {
         achievementsPanel.setBorder(BorderFactory.createTitledBorder("Logros Desbloqueados"));
 
         // Añadir los paneles al layout del cuadro de mando
-        dashboardPanel.add(favoritesPanel);
+        dashboardPanel.add(favoritesScrollPane);
         dashboardPanel.add(statsPanel);
         dashboardPanel.add(friendsPanel);
         dashboardPanel.add(favoritesInfoPanel);
