@@ -9,6 +9,7 @@ public class DashboardView {
     public JFrame frame;
     public JPanel favoritesPanel, gamesPanel, statsPanel, achievementsPanel, friendsPanel, favoritesInfoPanel;
     public JButton nextButton, prevButton; // Añadido prevButton para navegación anterior.
+    public JComboBox<String> sortComboBox;
 
     public DashboardView() {
         // Set FlatDarkLaf look and feel
@@ -62,6 +63,8 @@ public class DashboardView {
         nextButton = new JButton("Siguiente");
         navigationPanel.add(prevButton);
         navigationPanel.add(nextButton);
+        sortComboBox = new JComboBox<>(new String[]{"Sort by Name", "Sort by Playtime"});
+        navigationPanel.add(sortComboBox);
 
         // Agregar paneles al marco principal
         frame.add(dashboardPanel, BorderLayout.CENTER);
