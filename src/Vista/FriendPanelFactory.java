@@ -1,23 +1,21 @@
 package src.Vista;
 
-import com.lukaspradel.steamapi.data.json.ownedgames.Game;
 import com.lukaspradel.steamapi.data.json.playersummaries.Player;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URL;
 
 public class FriendPanelFactory implements PanelFactoryFriend {
     private static final int MARGIN = 10;
     @Override
-    public JPanel createPanel(Player friendList, ActionListener actionListener) {
+    public JPanel createPanel(Player friendList) {
         JPanel friendPanel = new JPanel(new BorderLayout());
         friendPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(Color.GRAY, 1),
-                BorderFactory.createEmptyBorder(10, 10, 10, 10)
+                BorderFactory.createEmptyBorder(MARGIN, MARGIN, MARGIN, MARGIN)
         ));
 
         String imageUrl = friendList.getAvatarfull();
