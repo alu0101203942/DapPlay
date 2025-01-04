@@ -82,9 +82,6 @@ public class SteamApiService {
                 Collections.emptyList() // No filtrar por AppIDs específicos
         );
         GetOwnedGames ownedGames = client.processRequest(request);
-
-        AtomicInteger contador = new AtomicInteger(1);
-
         if (ownedGames != null && ownedGames.getResponse() != null) {
 
             return (int) ownedGames.getResponse().getGames().stream()
