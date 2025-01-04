@@ -8,7 +8,7 @@ import java.awt.*;
 
 public class DashboardView {
     public JFrame frame;
-    public JPanel favoritesPanel, gamesPanel, statsPanel, achievementsPanel, friendsPanel, favoritesInfoPanel;
+    public JPanel userPanel, favoritesPanel, gamesPanel, statsPanel, achievementsPanel, friendsPanel, favoritesInfoPanel;
     public JButton nextButton, prevButton;
     public JComboBox<String> sortComboBox;
     public JButton openNewDashboardButton;
@@ -28,15 +28,20 @@ public class DashboardView {
         frame.setSize(1200, 800); // Tamaño ajustado para acomodar todos los paneles
         frame.setLayout(new BorderLayout());
 
-        // Configuración de la interfaz gráfica (GUI)
-        frame = new JFrame("Steam Dashboard");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1200, 800); // Tamaño ajustado para acomodar todos los paneles
-        frame.setLayout(new BorderLayout());
-
         // Crear el panel principal del cuadro de mando
-        JPanel dashboardPanel = new JPanel();
-        dashboardPanel.setLayout(new GridLayout(2, 3, 10, 10)); // 2 filas y 3 columnas
+        JPanel dashboardPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.insets = new Insets(10, 10, 10, 10);
+
+        userPanel = new JPanel();
+        userPanel.setBorder(BorderFactory.createTitledBorder("Información del Usuario"));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 3;
+        gbc.weightx = 1.0;
+        gbc.weighty = 0.1;
+        dashboardPanel.add(userPanel, gbc);
 
         // Crear paneles para cada sección
         favoritesPanel = new JPanel();
@@ -57,7 +62,6 @@ public class DashboardView {
         statsPanel.add(chartTypeComboBox, BorderLayout.NORTH);
         chartTypeComboBox.setSelectedIndex(0);
 
-
         friendsPanel = new JPanel();
         friendsPanel.setBorder(BorderFactory.createTitledBorder("Lista de Amigos"));
 
@@ -68,12 +72,28 @@ public class DashboardView {
         achievementsPanel.setBorder(BorderFactory.createTitledBorder("Logros Desbloqueados"));
 
         // Añadir los paneles al layout del cuadro de mando
-        dashboardPanel.add(favoritesScrollPane);
-        dashboardPanel.add(statsPanel);
-        dashboardPanel.add(friendsPanel);
-        dashboardPanel.add(favoritesInfoPanel);
-        dashboardPanel.add(gamesPanel);
-        dashboardPanel.add(achievementsPanel);
+        gbc.gridwidth = 1;
+        gbc.weighty = 0.4;
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        dashboardPanel.add(favoritesScrollPane, gbc);
+
+        gbc.gridx = 1;
+        dashboardPanel.add(statsPanel, gbc);
+
+        gbc.gridx = 2;
+        dashboardPanel.add(friendsPanel, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        dashboardPanel.add(favoritesInfoPanel, gbc);
+
+        gbc.gridx = 1;
+        dashboardPanel.add(gamesPanel, gbc);
+
+        gbc.gridx = 2;
+        dashboardPanel.add(achievementsPanel, gbc);
 
         // Panel inferior con botones de navegación
         JPanel navigationPanel = new JPanel();
