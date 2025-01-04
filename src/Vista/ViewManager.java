@@ -3,12 +3,10 @@ package src.Vista;
 
 
 import com.lukaspradel.steamapi.data.json.playersummaries.Player;
+import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
-import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-import javafx.application.Platform;
-
 import src.Controlador.DashboardController;
 import src.Controlador.GameplayController;
 import src.Modelo.FavoritesManager;
