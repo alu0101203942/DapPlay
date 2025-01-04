@@ -10,13 +10,14 @@ import com.lukaspradel.steamapi.webapi.client.SteamWebApiClient;
 import com.lukaspradel.steamapi.webapi.request.GetFriendListRequest;
 import com.lukaspradel.steamapi.webapi.request.builders.SteamWebApiRequestFactory;
 
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class SteamApiService {
@@ -99,5 +100,95 @@ public class SteamApiService {
         } else {
             return Collections.emptyList();
         }
+    }
+
+    public static List<Map<String, Object>> fetchAchievements(String steamId, String appId, String apiKey) throws IOException {
+        String urlString = "https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v0001/?appid=" + appId + "&key=" + apiKey + "&steamid=" + steamId;
+        System.out.println("Fetching achievements from URL: " + urlString);
+
+        URL url = new URL(urlString);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
+
+        int responseCode = connection.getResponseCode();
+        if (responseCode != 200) {
+            throw new IOException("Steam API responded with error code: " + responseCode);
+        }
+
+        Scanner scanner = new Scanner(connection.getInputStream());
+        StringBuilder response = new StringBuilder();
+        while (scanner.hasNext()) {
+            response.append(scanner.nextLine());
+        }
+        scanner.close();
+
+
+        JSONObject jsonResponse = new JSONObject(response.toString());
+        if (jsonResponse.has("playerstats") && jsonResponse.getJSONObject("playerstats").has("achievements")) {
+            JSONArray achievementsArray = jsonResponse
+                    .getJSONObject("playerstats")
+                    .getJSONArray("achievements");
+
+            List<Map<String, Object>> achievements = new ArrayList<>();
+            for (int i = 0; i < achievementsArray.length(); i++) {
+                JSONObject achievement = achievementsArray.getJSONObject(i);
+                Map<String, Object> achievementData = new HashMap<>();
+
+                achievementData.put("apiname", achievement.optString("apiname", "unknown"));
+
+                // Forzar el valor como Integer
+                int achievedValue = achievement.optInt("achieved", 0);
+                achievementData.put("achieved", achievedValue);
+                achievements.add(achievementData);
+            }
+
+            return achievements;
+        } else if (jsonResponse.has("playerstats") && jsonResponse.getJSONObject("playerstats").has("error")) {
+            String error = jsonResponse.getJSONObject("playerstats").getString("error");
+            throw new IOException("Error from Steam API: " + error);
+        } else {
+            throw new IOException("No achievements found or invalid response from Steam API.");
+        }
+    }
+
+    public List<Map<String, String>> fetchAchievementDetails(String appId, String apiKey) throws IOException {
+        String urlString = "https://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?key=" + apiKey + "&appid=" + appId;
+
+        URL url = new URL(urlString);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
+
+        // Leer la respuesta
+        Scanner scanner = new Scanner(connection.getInputStream());
+        StringBuilder response = new StringBuilder();
+        while (scanner.hasNext()) {
+            response.append(scanner.nextLine());
+        }
+        scanner.close();
+
+        // Parsear la respuesta
+        JSONObject jsonResponse = new JSONObject(response.toString());
+        JSONObject game = jsonResponse.getJSONObject("game");
+        JSONObject availableGameStats = game.getJSONObject("availableGameStats");
+        JSONArray achievementsArray = availableGameStats.getJSONArray("achievements");
+
+        List<Map<String, String>> achievementDetails = new ArrayList<>();
+        for (int i = 0; i < achievementsArray.length(); i++) {
+            JSONObject achievement = achievementsArray.getJSONObject(i);
+
+            Map<String, String> details = new HashMap<>();
+            details.put("name", achievement.optString("name", "unknown"));
+            details.put("displayName", achievement.optString("displayName", "Unknown Achievement"));
+            details.put("description", achievement.optString("description", "No description available."));
+            details.put("icon", achievement.optString("icon", ""));
+            details.put("icongray", achievement.optString("icongray", ""));
+            achievementDetails.add(details);
+        }
+
+        return achievementDetails;
+    }
+
+    public String getApiKey() {
+        return apiKey;
     }
 }
