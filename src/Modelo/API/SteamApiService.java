@@ -1,4 +1,4 @@
-package src.Modelo;
+package src.Modelo.API;
 
 import com.lukaspradel.steamapi.core.exception.SteamApiException;
 import com.lukaspradel.steamapi.data.json.friendslist.Friend;

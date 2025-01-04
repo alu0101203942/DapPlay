@@ -1,7 +1,7 @@
 package src;
 
 import src.Controlador.StartController;
-import src.Modelo.SteamApiService;
+import src.Modelo.API.SteamApiService;
 import src.Vista.StartView;
 
 public class Main {

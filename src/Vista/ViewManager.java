@@ -1,0 +1,92 @@
+package src.Vista;
+
+import com.lukaspradel.steamapi.data.json.playersummaries.Player;
+import src.Modelo.FavoritesManager;
+import com.lukaspradel.steamapi.data.json.ownedgames.Game;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.List;
+import java.util.Objects;
+
+public class ViewManager {
+    private final DashboardView dashboardView;
+
+    public ViewManager(DashboardView view) {
+        this.dashboardView = view;
+    }
+
+    public void displayGames(List<Game> games, int currentPage, int pageSize, FavoritesManager favoritesManager) {
+        dashboardView.gamesPanel.removeAll();
+        dashboardView.gamesPanel.setLayout(new BorderLayout());
+
+        JPanel gamesListPanel = new JPanel();
+        gamesListPanel.setLayout(new BoxLayout(gamesListPanel, BoxLayout.Y_AXIS));
+        GamePanelFactory gamePanelFactory = new GamePanelFactory();
+
+        int start = currentPage * pageSize;
+        int end = Math.min(start + pageSize, games.size());
+        for (int i = start; i < end; i++) {
+            Game game = games.get(i);
+            JPanel gamePanel = gamePanelFactory.createPanel(game, e -> favoritesManager.addFavorite(game));
+            gamesListPanel.add(gamePanel);
+        }
+
+        JScrollPane scrollPane = new JScrollPane(gamesListPanel);
+        scrollPane.setPreferredSize(new Dimension(dashboardView.gamesPanel.getWidth(), 6 * 200));
+        dashboardView.gamesPanel.add(scrollPane, BorderLayout.CENTER);
+
+        dashboardView.gamesPanel.revalidate();
+        dashboardView.gamesPanel.repaint();
+    }
+
+    public void displayFriends(List<Player> friends) {
+        dashboardView.friendsPanel.removeAll();
+        dashboardView.friendsPanel.setLayout(new BorderLayout());
+
+        JPanel friendsListPanel = new JPanel();
+        friendsListPanel.setLayout(new BoxLayout(friendsListPanel, BoxLayout.Y_AXIS));
+        FriendPanelFactory friendPanelFactory = new FriendPanelFactory();
+
+        for (Player friend : friends) {
+            JPanel friendPanel = friendPanelFactory.createPanel(friend);
+            friendsListPanel.add(friendPanel);
+        }
+
+        JScrollPane scrollPane = new JScrollPane(friendsListPanel);
+        scrollPane.setPreferredSize(new Dimension(dashboardView.friendsPanel.getWidth(), 4 * 100)); // Assuming each friend panel is 100px high
+        dashboardView.friendsPanel.add(scrollPane, BorderLayout.CENTER);
+
+        dashboardView.friendsPanel.revalidate();
+        dashboardView.friendsPanel.repaint();
+    }
+
+
+    public void updateFavorites(List<Game> updatedGames, FavoritesManager favoritesManager) {
+        dashboardView.favoritesPanel.removeAll();
+        FavoritePanelFactory favoritePanelFactory = new FavoritePanelFactory();
+
+        List<Game> favoriteGames = favoritesManager.getFavoriteGames();
+
+        for (Game game : favoriteGames) {
+            JPanel favoritePanel = favoritePanelFactory.createPanel(game, e -> favoritesManager.removeFavorite(game)); // Añadir lógica para eliminar
+            dashboardView.favoritesPanel.add(favoritePanel);
+        }
+        updateChart(Objects.requireNonNull(dashboardView.chartTypeComboBox.getSelectedItem()).toString(), favoriteGames);
+        dashboardView.favoritesPanel.revalidate();
+        dashboardView.favoritesPanel.repaint();
+    }
+
+
+    public void updateChart(String chartType, List<Game> favoriteGames) {
+        dashboardView.statsPanel.removeAll();
+        dashboardView.statsPanel.add(dashboardView.chartTypeComboBox, BorderLayout.NORTH);
+
+        ChartPanelFactory chartPanelFactory = new ChartPanelFactory();
+        JPanel chartPanel = chartPanelFactory.createChart(chartType, favoriteGames);
+
+        dashboardView.statsPanel.add(chartPanel, BorderLayout.CENTER);
+        dashboardView.statsPanel.revalidate();
+        dashboardView.statsPanel.repaint();
+    }
+}

@@ -3,7 +3,7 @@ package src.Controlador;
 import src.Modelo.FavoritesManager;
 import src.Modelo.SortByPlaytime;
 import src.Modelo.SortStrategy;
-import src.Modelo.SteamApiService;
+import src.Modelo.API.SteamApiService;
 import src.Vista.DashboardView;
 import src.Vista.StartView;
 
