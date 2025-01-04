@@ -16,6 +16,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.json.JSONObject;
 
@@ -71,6 +72,32 @@ public class SteamApiService {
             return Collections.emptyList();
         }
     }
+
+    public int getOwnedProductsCount(String steamId64) throws SteamApiException {
+        SteamWebApiClient client = new SteamWebApiClient.SteamWebApiClientBuilder(apiKey).build();
+        var request = SteamWebApiRequestFactory.createGetOwnedGamesRequest(
+                steamId64,
+                true,  // include_appinfo -> Incluye información detallada de los juegos
+                false, // include_played_free_games -> Excluir juegos gratuitos no comprados
+                Collections.emptyList() // No filtrar por AppIDs específicos
+        );
+        GetOwnedGames ownedGames = client.processRequest(request);
+
+        AtomicInteger contador = new AtomicInteger(1);
+
+        if (ownedGames != null && ownedGames.getResponse() != null) {
+
+            return (int) ownedGames.getResponse().getGames().stream()
+                    .filter(game -> !game.getName().toLowerCase().contains("demo")) // Excluir demos
+                    .filter(game -> !game.getName().toLowerCase().contains("beta")) // Excluir betas si es necesario
+                    .count();
+
+        } else {
+            return 0;
+        }
+    }
+
+
 
     public List<Friend> getFriends(String steamId64) throws SteamApiException {
         SteamWebApiClient client = new SteamWebApiClient.SteamWebApiClientBuilder(apiKey).build();

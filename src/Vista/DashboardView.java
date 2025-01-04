@@ -1,4 +1,3 @@
-// src/Vista/DashboardView.java
 package src.Vista;
 
 import com.formdev.flatlaf.FlatDarkLaf;
@@ -24,13 +23,13 @@ public class DashboardView {
             e.printStackTrace();
         }
 
-        // Configuración de la interfaz gráfica (GUI)
+        // Configuración del marco principal
         frame = new JFrame("DapPlay");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1200, 800); // Tamaño ajustado para acomodar todos los paneles
         frame.setLayout(new BorderLayout());
 
-        // Crear el panel principal del cuadro de mando
+        // Panel principal del cuadro de mando
         JPanel dashboardPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.BOTH;
@@ -46,27 +45,31 @@ public class DashboardView {
         gbc.weighty = 0.1;
         dashboardPanel.add(userPanel, gbc);
 
-        // Panel de fondo del perfil
+        // Fondo del perfil
         backgroundPanel = new JPanel(new BorderLayout());
         userPanel.add(backgroundPanel, BorderLayout.CENTER);
 
         // Panel de información del usuario
         JPanel userInfoPanel = new JPanel();
         userInfoPanel.setLayout(new BoxLayout(userInfoPanel, BoxLayout.Y_AXIS));
-        avatarLabel = new JLabel();
-        usernameLabel = new JLabel();
-        gamesCountLabel = new JLabel();
+        avatarLabel = new JLabel("Avatar"); // Etiqueta para el avatar
+        usernameLabel = new JLabel("Usuario:"); // Etiqueta para el nombre del usuario
+        gamesCountLabel = new JLabel("Número de juegos:"); // Etiqueta para el número de juegos
+
+        avatarLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        usernameLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        gamesCountLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+
         userInfoPanel.add(avatarLabel);
         userInfoPanel.add(usernameLabel);
         userInfoPanel.add(gamesCountLabel);
         userPanel.add(userInfoPanel, BorderLayout.SOUTH);
 
-        // Crear paneles para cada sección
+        // Paneles de las demás secciones
         favoritesPanel = new JPanel();
         favoritesPanel.setLayout(new BoxLayout(favoritesPanel, BoxLayout.Y_AXIS));
         favoritesPanel.setBorder(BorderFactory.createTitledBorder("Juegos Favoritos"));
 
-        // Envolver favoritesPanel en un JScrollPane
         JScrollPane favoritesScrollPane = new JScrollPane(favoritesPanel);
         favoritesScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         favoritesScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -76,7 +79,7 @@ public class DashboardView {
         gamesPanel.setLayout(new GridLayout(5, 1, 10, 10));
 
         statsPanel = new JPanel();
-        chartTypeComboBox = new JComboBox<>(new String[]{"Gráfico de Barras","Gráfico de Sectores"});
+        chartTypeComboBox = new JComboBox<>(new String[]{"Gráfico de Barras", "Gráfico de Sectores"});
         statsPanel.add(chartTypeComboBox, BorderLayout.NORTH);
         chartTypeComboBox.setSelectedIndex(0);
 

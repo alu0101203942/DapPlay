@@ -9,9 +9,11 @@ import src.Modelo.SortByPlaytime;
 import src.Modelo.SortStrategy;
 import src.Modelo.API.SteamApiService;
 import src.Vista.DashboardView;
+import src.Vista.UserPanelFactory;
 import src.Vista.ViewManager;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.List;
 
 public class DashboardController {
@@ -35,7 +37,7 @@ public class DashboardController {
         this.dashboardView = view;
 
         favoritesManager.addObserver(updatedGames -> viewManager.updateFavorites(updatedGames, favoritesManager));
-
+        fetchAndDisplayUserInfo();
         fetchGames();
         fetchFriends();
         setupListeners(view);
@@ -60,6 +62,31 @@ public class DashboardController {
             JOptionPane.showMessageDialog(null, "Error fetching games: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
+    private void fetchAndDisplayUserInfo() {
+        try {
+            String steamId64 = isSteamId64(username) ? username : steamApiService.getSteamIdFromUsername(username);
+            List<Player> userInfoList = steamApiService.getPlayerSummaries(steamId64);
+
+            if (!userInfoList.isEmpty()) {
+                Player userInfo = userInfoList.get(0);
+                int gamesCount = steamApiService.getOwnedProductsCount(steamId64);
+
+                UserPanelFactory userPanelFactory = new UserPanelFactory();
+                JPanel userPanel = userPanelFactory.createPanel(userInfo, gamesCount);
+
+                dashboardView.userPanel.removeAll();
+                dashboardView.userPanel.add(userPanel, BorderLayout.CENTER);
+                dashboardView.userPanel.revalidate();
+                dashboardView.userPanel.repaint();
+            } else {
+                JOptionPane.showMessageDialog(dashboardView.frame, "No se encontró información del usuario.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(dashboardView.frame, "Error al cargar información del usuario: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
 
     private void fetchFriends() {
         try {
