@@ -13,6 +13,8 @@ public class DashboardView {
     public JComboBox<String> sortComboBox;
     public JButton openNewDashboardButton;
     public JComboBox<String> chartTypeComboBox;
+    public JLabel avatarLabel, usernameLabel, gamesCountLabel;
+    public JPanel backgroundPanel;
 
     public DashboardView() {
         // Set FlatDarkLaf look and feel
@@ -23,7 +25,7 @@ public class DashboardView {
         }
 
         // Configuración de la interfaz gráfica (GUI)
-        frame = new JFrame("Steam Dashboard");
+        frame = new JFrame("DapPlay");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1200, 800); // Tamaño ajustado para acomodar todos los paneles
         frame.setLayout(new BorderLayout());
@@ -34,7 +36,8 @@ public class DashboardView {
         gbc.fill = GridBagConstraints.BOTH;
         gbc.insets = new Insets(10, 10, 10, 10);
 
-        userPanel = new JPanel();
+        // Panel de información del usuario
+        userPanel = new JPanel(new BorderLayout());
         userPanel.setBorder(BorderFactory.createTitledBorder("Información del Usuario"));
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -42,6 +45,21 @@ public class DashboardView {
         gbc.weightx = 1.0;
         gbc.weighty = 0.1;
         dashboardPanel.add(userPanel, gbc);
+
+        // Panel de fondo del perfil
+        backgroundPanel = new JPanel(new BorderLayout());
+        userPanel.add(backgroundPanel, BorderLayout.CENTER);
+
+        // Panel de información del usuario
+        JPanel userInfoPanel = new JPanel();
+        userInfoPanel.setLayout(new BoxLayout(userInfoPanel, BoxLayout.Y_AXIS));
+        avatarLabel = new JLabel();
+        usernameLabel = new JLabel();
+        gamesCountLabel = new JLabel();
+        userInfoPanel.add(avatarLabel);
+        userInfoPanel.add(usernameLabel);
+        userInfoPanel.add(gamesCountLabel);
+        userPanel.add(userInfoPanel, BorderLayout.SOUTH);
 
         // Crear paneles para cada sección
         favoritesPanel = new JPanel();

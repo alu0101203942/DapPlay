@@ -16,6 +16,21 @@ public class ViewManager {
         this.dashboardView = view;
     }
 
+    public void displayUserInfo(Player user, int gameCount) {
+        ImageIcon avatarIcon = new ImageIcon(user.getAvatarfull());
+        dashboardView.avatarLabel.setIcon(avatarIcon);
+        dashboardView.usernameLabel.setText("Username: " + user.getPersonaname());
+
+        dashboardView.gamesCountLabel.setText("Number of Games: " + gameCount);
+
+        ImageIcon backgroundIcon = new ImageIcon(user.getProfileurl()); // Assuming profileurl contains the background image URL
+        JLabel backgroundLabel = new JLabel(backgroundIcon);
+        dashboardView.backgroundPanel.add(backgroundLabel, BorderLayout.CENTER);
+
+        dashboardView.userPanel.revalidate();
+        dashboardView.userPanel.repaint();
+    }
+
     public void displayGames(List<Game> games, int currentPage, int pageSize, FavoritesManager favoritesManager) {
         dashboardView.gamesPanel.removeAll();
         dashboardView.gamesPanel.setLayout(new BorderLayout());
