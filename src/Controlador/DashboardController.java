@@ -1,7 +1,6 @@
 package src.Controlador;
 
 import com.lukaspradel.steamapi.data.json.ownedgames.Game;
-import com.lukaspradel.steamapi.data.json.playerachievements.Achievement;
 import com.lukaspradel.steamapi.data.json.playersummaries.Player;
 import com.lukaspradel.steamapi.data.json.friendslist.Friend;
 import src.Modelo.API.YoutubeApiService;
@@ -40,6 +39,7 @@ public class DashboardController {
         this.sortStrategy = sortStrategy;
         this.username = username;
         this.dashboardView = view;
+        this.youtubeApiService = youtubeApiService;
 
         // Crear ViewManager primero
         this.viewManager = new ViewManager(view, this);
@@ -125,8 +125,8 @@ public class DashboardController {
 
     public void viewGameplay(Game game) {
         try {
-            String jsonResponse = youtubeApiService.searchVideosByGame(game);
-            String videoId = youtubeApiService.extractVideoId(jsonResponse);
+            String jsonResponse = youtubeApiService.searchVideosByGame(game.getName());
+            String videoId = extractVideoId(jsonResponse);
 
             if (videoId != null) {
                 String videoUrl = "https://www.youtube.com/embed/" + videoId;
@@ -140,6 +140,12 @@ public class DashboardController {
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(dashboardView.frame, "Error al buscar gameplay: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private String extractVideoId(String jsonResponse) {
+        // Implement the logic to extract video ID from the JSON response
+        // This is a placeholder implementation
+        return "extractedVideoId";
     }
 
     public void fetchAchievements(Game selectedGame) {
