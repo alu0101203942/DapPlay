@@ -42,7 +42,7 @@ public class DashboardView {
         gbc.gridy = 0;
         gbc.gridwidth = 3;
         gbc.weightx = 1.0;
-        gbc.weighty = 0.1;
+        gbc.weighty = 0.09;
         dashboardPanel.add(userPanel, gbc);
 
         // Fondo del perfil

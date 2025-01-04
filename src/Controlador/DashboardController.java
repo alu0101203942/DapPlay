@@ -4,6 +4,7 @@ import com.lukaspradel.steamapi.data.json.ownedgames.Game;
 import com.lukaspradel.steamapi.data.json.playerachievements.Achievement;
 import com.lukaspradel.steamapi.data.json.playersummaries.Player;
 import com.lukaspradel.steamapi.data.json.friendslist.Friend;
+import src.Modelo.API.YoutubeApiService;
 import src.Modelo.FavoritesManager;
 import src.Modelo.SortByName;
 import src.Modelo.SortByPlaytime;
@@ -28,24 +29,38 @@ public class DashboardController {
     private final ViewManager viewManager;
     private final DashboardView dashboardView;
     private List<Game> games;
+    private YoutubeApiService youtubeApiService;
 
     private int currentPage = 0;
     private static final int PAGE_SIZE = 6;
 
-    public DashboardController(SteamApiService service, FavoritesManager favoritesManager, DashboardView view, SortStrategy sortStrategy, String username) {
+    public DashboardController(SteamApiService service, FavoritesManager favoritesManager, DashboardView view, SortStrategy sortStrategy, String username, YoutubeApiService youtubeApiService) {
         this.steamApiService = service;
         this.favoritesManager = favoritesManager;
         this.sortStrategy = sortStrategy;
         this.username = username;
-        this.viewManager = new ViewManager(view, this);
         this.dashboardView = view;
 
+        // Crear ViewManager primero
+        this.viewManager = new ViewManager(view, this);
+
+        // Crear GameplayController usando ViewManager
+        GameplayController gameplayController = new GameplayController(viewManager, youtubeApiService);
+
+        // Pasar GameplayController a ViewManager para completar la relación
+        this.viewManager.setGameplayController(gameplayController);
+
+        // Registrar los observadores
         favoritesManager.addObserver(updatedGames -> viewManager.updateFavorites(updatedGames, favoritesManager));
+
+        // Inicializar la interfaz
         fetchAndDisplayUserInfo();
         fetchGames();
         fetchFriends();
         setupListeners(view);
     }
+
+
 
     private boolean isSteamId64(String input) {
         return input.matches("\\d{17}");
@@ -105,6 +120,25 @@ public class DashboardController {
             viewManager.displayFriends(players);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(dashboardView.frame, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public void viewGameplay(Game game) {
+        try {
+            String jsonResponse = youtubeApiService.searchVideosByGame(game);
+            String videoId = youtubeApiService.extractVideoId(jsonResponse);
+
+            if (videoId != null) {
+                String videoUrl = "https://www.youtube.com/embed/" + videoId;
+
+                // Llamar al método playGameplay desde ViewManager
+                viewManager.playGameplay(videoUrl);
+
+            } else {
+                JOptionPane.showMessageDialog(dashboardView.frame, "No se encontraron gameplays para este juego.", "Información", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(dashboardView.frame, "Error al buscar gameplay: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -189,12 +223,17 @@ public class DashboardController {
                 int index = evt.getY() / 200;
                 if (index >= 0 && index < games.size()) {
                     Game selectedGame = games.get(index);
+
+                    // Mostrar logros del juego
                     fetchAchievements(selectedGame);
+
+                    // Ver gameplay del juego
+                    viewGameplay(selectedGame);
                 }
             }
         });
-
     }
+
 
     private void nextPage() {
         if ((currentPage + 1) * PAGE_SIZE < games.size()) {

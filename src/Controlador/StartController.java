@@ -1,5 +1,6 @@
 package src.Controlador;
 
+import src.Modelo.API.YoutubeApiService;
 import src.Modelo.FavoritesManager;
 import src.Modelo.SortByPlaytime;
 import src.Modelo.SortStrategy;
@@ -12,10 +13,12 @@ import javax.swing.*;
 public class StartController {
     private final SteamApiService steamApiService;
     private final StartView startView;
+    private final YoutubeApiService youtubeApiService;
 
-    public StartController(SteamApiService service, StartView startView) {
+    public StartController(SteamApiService service, StartView startView, YoutubeApiService youtubeApiService) {
         this.steamApiService = service;
         this.startView = startView;
+        this.youtubeApiService = youtubeApiService;
 
         startView.nextButton.addActionListener(e -> showDashboard());
     }
@@ -35,7 +38,7 @@ public class StartController {
         DashboardView dashboardView = new DashboardView();
         FavoritesManager favoritesManager = new FavoritesManager();
         SortStrategy sortStrategy = new SortByPlaytime();
-        new DashboardController(steamApiService, favoritesManager, dashboardView, sortStrategy, username);
+        new DashboardController(steamApiService, favoritesManager, dashboardView, sortStrategy, username, youtubeApiService);
         dashboardView.show();
 
         // Agregar opción para abrir otro dashboard
@@ -45,7 +48,7 @@ public class StartController {
     private void openNewDashboard() {
         // Mostrar la pantalla de inicio nuevamente para otro usuario
         StartView newStartView = new StartView();
-        new StartController(steamApiService, newStartView);
+        new StartController(steamApiService, newStartView, youtubeApiService);
         newStartView.show();
     }
 }
