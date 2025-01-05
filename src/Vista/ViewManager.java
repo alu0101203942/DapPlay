@@ -5,6 +5,7 @@ package src.Vista;
 import com.lukaspradel.steamapi.data.json.playersummaries.Player;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
+import javafx.embed.swt.*;
 import javafx.scene.Scene;
 import javafx.scene.web.WebView;
 import src.Controlador.DashboardController;
