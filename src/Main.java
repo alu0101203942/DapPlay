@@ -1,13 +1,10 @@
 package src;
 
-import javafx.application.Application;
-import javafx.stage.Stage;
+
 import src.Controlador.StartController;
 import src.Modelo.API.SteamApiService;
 import src.Modelo.API.YoutubeApiService;
 import src.Vista.StartView;
-
-import static javafx.application.Application.launch;
 
 public class Main {
     public static void main(String[] args) {
@@ -18,3 +15,8 @@ public class Main {
         startView.show();
     }
 }
+
+
+
+
+

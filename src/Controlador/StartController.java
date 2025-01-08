@@ -2,8 +2,8 @@ package src.Controlador;
 
 import src.Modelo.API.YoutubeApiService;
 import src.Modelo.FavoritesManager;
-import src.Modelo.SortByPlaytime;
-import src.Modelo.SortStrategy;
+import src.Modelo.Sort.SortByPlaytime;
+import src.Modelo.Sort.SortStrategy;
 import src.Modelo.API.SteamApiService;
 import src.Vista.DashboardView;
 import src.Vista.StartView;

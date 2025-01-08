@@ -14,13 +14,13 @@ public class AchievementPanelFactory implements PanelFactory {
         achievementsContainer.setLayout(new BorderLayout());
         achievementsContainer.setBackground(new Color(33, 33, 33));
 
-        // Agregar título
+        // Add title
         JLabel titleLabel = new JLabel(title);
         titleLabel.setForeground(titleColor);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
         achievementsContainer.add(titleLabel, BorderLayout.NORTH);
 
-        // Crear lista de logros
+        // Create achievements list
         JPanel achievementsListPanel = new JPanel();
         achievementsListPanel.setLayout(new BoxLayout(achievementsListPanel, BoxLayout.Y_AXIS));
         achievementsListPanel.setBackground(new Color(33, 33, 33));
@@ -36,8 +36,17 @@ public class AchievementPanelFactory implements PanelFactory {
                     ? (String) achievement.get("icon")
                     : (String) achievement.get("iconGray");
 
-            JLabel iconLabel = new JLabel(new ImageIcon(new URL(iconUrl)));
-            achievementPanel.add(iconLabel, BorderLayout.WEST);
+            // Scale the icon image
+            try {
+                ImageIcon icon = new ImageIcon(new URL(iconUrl));
+                Image image = icon.getImage();
+                Image scaledImage = image.getScaledInstance(50, 50, Image.SCALE_SMOOTH); // Scale to 50x50 pixels
+                JLabel iconLabel = new JLabel(new ImageIcon(scaledImage));
+                achievementPanel.add(iconLabel, BorderLayout.WEST);
+            } catch (Exception ex) {
+                JLabel iconLabel = new JLabel("Icon not available");
+                achievementPanel.add(iconLabel, BorderLayout.WEST);
+            }
 
             JPanel infoPanel = new JPanel();
             infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));

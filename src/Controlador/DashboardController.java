@@ -5,10 +5,11 @@ import com.lukaspradel.steamapi.data.json.playersummaries.Player;
 import com.lukaspradel.steamapi.data.json.friendslist.Friend;
 import src.Modelo.API.YoutubeApiService;
 import src.Modelo.FavoritesManager;
-import src.Modelo.SortByName;
-import src.Modelo.SortByPlaytime;
-import src.Modelo.SortStrategy;
+import src.Modelo.Sort.SortByName;
+import src.Modelo.Sort.SortByPlaytime;
+import src.Modelo.Sort.SortStrategy;
 import src.Modelo.API.SteamApiService;
+import src.Modelo.VideoData;
 import src.Vista.DashboardView;
 import src.Vista.UserPanelFactory;
 import src.Vista.ViewManager;
@@ -123,22 +124,18 @@ public class DashboardController {
         }
     }
 
+    // En DashboardController.java
     public void viewGameplay(Game game) {
         try {
-            String jsonResponse = youtubeApiService.searchVideosByGame(game.getName());
-            String videoId = extractVideoId(jsonResponse);
+            List<VideoData> videos = youtubeApiService.searchLatestVideosByGame(game.getName());
 
-            if (videoId != null) {
-                String videoUrl = "https://www.youtube.com/embed/" + videoId;
-
-                // Llamar al método playGameplay desde ViewManager
-                viewManager.playGameplay(videoUrl);
-
+            if (!videos.isEmpty()) {
+                viewManager.displayGameplayLinksWithThumbnails(videos, dashboardView.gameplayPanel);
             } else {
-                JOptionPane.showMessageDialog(dashboardView.frame, "No se encontraron gameplays para este juego.", "Información", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(dashboardView.frame, "No gameplays found for this game.", "Information", JOptionPane.INFORMATION_MESSAGE);
             }
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(dashboardView.frame, "Error al buscar gameplay: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(dashboardView.frame, "Error fetching gameplays: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 

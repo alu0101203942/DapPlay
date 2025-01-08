@@ -3,15 +3,11 @@ package src.Vista;
 
 
 import com.lukaspradel.steamapi.data.json.playersummaries.Player;
-import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
-import javafx.embed.swt.*;
-import javafx.scene.Scene;
-import javafx.scene.web.WebView;
 import src.Controlador.DashboardController;
 import src.Controlador.GameplayController;
 import src.Modelo.FavoritesManager;
 import com.lukaspradel.steamapi.data.json.ownedgames.Game;
+import src.Modelo.VideoData;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,9 +15,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.MalformedURLException;
 
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.net.URI;
 
 public class ViewManager {
     private final DashboardView dashboardView;
@@ -117,6 +115,22 @@ public class ViewManager {
         dashboardView.friendsPanel.repaint();
     }
 
+//    public void displayAchievements(List<Map<String, Object>> unlockedAchievements, List<Map<String, Object>> lockedAchievements) throws MalformedURLException {
+//        dashboardView.achievementsPanel.removeAll();
+//        dashboardView.achievementsPanel.setLayout(new GridLayout(1, 2)); // Dividir en dos columnas
+//
+//        AchievementPanelFactory achievementPanelFactory = new AchievementPanelFactory();
+//
+//        JPanel unlockedContainer = achievementPanelFactory.createPanel(unlockedAchievements, "Unlocked Achievements", Color.GREEN);
+//        dashboardView.achievementsPanel.add(unlockedContainer);
+//
+//        JPanel lockedContainer = achievementPanelFactory.createPanel(lockedAchievements, "Locked Achievements", Color.RED);
+//        dashboardView.achievementsPanel.add(lockedContainer);
+//
+//        dashboardView.achievementsPanel.revalidate();
+//        dashboardView.achievementsPanel.repaint();
+//    }
+
     public void displayAchievements(List<Map<String, Object>> unlockedAchievements, List<Map<String, Object>> lockedAchievements) throws MalformedURLException {
         dashboardView.achievementsPanel.removeAll();
         dashboardView.achievementsPanel.setLayout(new GridLayout(1, 2)); // Dividir en dos columnas
@@ -188,22 +202,125 @@ public class ViewManager {
 
 
 
-    public void playGameplay(String videoUrl) {
-        dashboardView.favoritesInfoPanel.removeAll(); // Limpiar el contenido anterior del panel
+    public void displayGameplayLinks(List<VideoData> videoUrls, String gameName) {
+        JFrame frame = new JFrame("Gameplays de " + gameName);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setSize(400, 300);
 
-        JFXPanel jfxPanel = new JFXPanel(); // Crear un panel JavaFX
-        dashboardView.favoritesInfoPanel.add(jfxPanel, BorderLayout.CENTER);
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-        Platform.runLater(() -> {
-            WebView webView = new WebView();
-            webView.getEngine().load(videoUrl); // Cargar el video en el WebView
+        for (VideoData video : videoUrls) {
+            JButton videoButton = new JButton(video.getVideoUrl());
+            videoButton.addActionListener(e -> openInBrowser(video.getVideoUrl()));
+            panel.add(videoButton);
+        }
 
-            Scene scene = new Scene(webView);
-            jfxPanel.setScene(scene);
-        });
-
-        dashboardView.favoritesInfoPanel.revalidate(); // Actualizar el panel para reflejar los cambios
-        dashboardView.favoritesInfoPanel.repaint();
+        JScrollPane scrollPane = new JScrollPane(panel);
+        frame.add(scrollPane);
+        frame.setVisible(true);
     }
+
+    public void displayGameplayLinksWithThumbnails(List<VideoData> videoDataList, JPanel gameplayPanel) {
+        gameplayPanel.removeAll(); // Limpiar contenido anterior
+
+        // Crear un panel interno con BoxLayout para alinear elementos verticalmente
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+
+        for (VideoData video : videoDataList) {
+            JPanel videoPanel = new JPanel(new BorderLayout());
+            videoPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5)); // Espaciado entre elementos
+
+            // Miniatura
+            try {
+                ImageIcon thumbnailIcon = new ImageIcon(new URL(video.getThumbnailUrl()));
+                Image image = thumbnailIcon.getImage(); // Obtener la imagen
+                Image scaledImage = image.getScaledInstance(100, 100, Image.SCALE_SMOOTH); // Escalar la imagen
+                JLabel thumbnailLabel = new JLabel(new ImageIcon(scaledImage));
+                videoPanel.add(thumbnailLabel, BorderLayout.WEST);
+            } catch (Exception ex) {
+                JLabel thumbnailLabel = new JLabel("Thumbnail not available");
+                videoPanel.add(thumbnailLabel, BorderLayout.WEST);
+            }
+
+            // Botón de enlace
+            JButton videoButton = new JButton("Open in browser");
+            videoButton.addActionListener(event -> {
+                try {
+                    Desktop.getDesktop().browse(new URL(video.getVideoUrl()).toURI());
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(gameplayPanel, "Error opening link: " + ex.getMessage());
+                }
+            });
+            videoPanel.add(videoButton, BorderLayout.CENTER);
+
+            // Agregar el panel del video al panel de contenido
+            contentPanel.add(videoPanel);
+        }
+
+        // Agregar el panel de contenido a un JScrollPane
+        JScrollPane scrollPane = new JScrollPane(contentPanel);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+        // Reemplazar el contenido del gameplayPanel con el JScrollPane
+        gameplayPanel.setLayout(new BorderLayout());
+        gameplayPanel.add(scrollPane, BorderLayout.CENTER);
+
+        gameplayPanel.revalidate(); // Refrescar el panel
+        gameplayPanel.repaint();
+    }
+
+    private void showVideosInNewWindow(List<VideoData> videoDataList) {
+        JFrame frame = new JFrame("Gameplays");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setSize(800, 600);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        for (VideoData video : videoDataList) {
+            JPanel videoPanel = new JPanel(new BorderLayout());
+
+            // Thumbnail
+            try {
+                ImageIcon thumbnailIcon = new ImageIcon(new URL(video.getThumbnailUrl()));
+                Image image = thumbnailIcon.getImage(); // Get the image
+                Image scaledImage = image.getScaledInstance(100, 100, Image.SCALE_SMOOTH); // Scale the image
+                JLabel thumbnailLabel = new JLabel(new ImageIcon(scaledImage));
+                videoPanel.add(thumbnailLabel, BorderLayout.WEST);
+            } catch (Exception ex) {
+                JLabel thumbnailLabel = new JLabel("Thumbnail not available");
+                videoPanel.add(thumbnailLabel, BorderLayout.WEST);
+            }
+
+            // Link
+            JButton videoButton = new JButton("Open in browser");
+            videoButton.addActionListener(event -> {
+                try {
+                    Desktop.getDesktop().browse(new URL(video.getVideoUrl()).toURI());
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(panel, "Error opening link: " + ex.getMessage());
+                }
+            });
+            videoPanel.add(videoButton, BorderLayout.CENTER);
+
+            panel.add(videoPanel);
+        }
+
+        JScrollPane scrollPane = new JScrollPane(panel);
+        frame.add(scrollPane);
+        frame.setVisible(true);
+    }
+
+
+    private void openInBrowser(String url) {
+        try {
+            Desktop.getDesktop().browse(new URI(url));
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al abrir el enlace: " + e.getMessage());
+        }
+    }
+
 
 }

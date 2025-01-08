@@ -7,7 +7,7 @@ import java.awt.*;
 
 public class DashboardView {
     public JFrame frame;
-    public JPanel userPanel, favoritesPanel, gamesPanel, statsPanel, achievementsPanel, friendsPanel, favoritesInfoPanel;
+    public JPanel userPanel, favoritesPanel, gamesPanel, statsPanel, achievementsPanel, friendsPanel, gameplayPanel;
     public JButton nextButton, prevButton;
     public JComboBox<String> sortComboBox;
     public JButton openNewDashboardButton;
@@ -86,8 +86,8 @@ public class DashboardView {
         friendsPanel = new JPanel();
         friendsPanel.setBorder(BorderFactory.createTitledBorder("Lista de Amigos"));
 
-        favoritesInfoPanel = new JPanel();
-        favoritesInfoPanel.setBorder(BorderFactory.createTitledBorder("Información de Favoritos"));
+        gameplayPanel = new JPanel();
+        gameplayPanel.setBorder(BorderFactory.createTitledBorder("Gameplays"));
 
         achievementsPanel = new JPanel();
         achievementsPanel.setBorder(BorderFactory.createTitledBorder("Logros Desbloqueados"));
@@ -108,7 +108,7 @@ public class DashboardView {
 
         gbc.gridx = 0;
         gbc.gridy = 2;
-        dashboardPanel.add(favoritesInfoPanel, gbc);
+        dashboardPanel.add(gameplayPanel, gbc);
 
         gbc.gridx = 1;
         dashboardPanel.add(gamesPanel, gbc);

@@ -1,19 +1,31 @@
 package src.Controlador;
 
 import src.Modelo.API.YoutubeApiService;
+import src.Modelo.VideoData;
 import src.Vista.ViewManager;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class GameplayController {
-    private final ViewManager viewManager;
-    private final YoutubeApiService youtubeApiService;
+    private YoutubeApiService youtubeApiService;
+    private ViewManager viewManager;
 
     public GameplayController(ViewManager viewManager, YoutubeApiService youtubeApiService) {
         this.viewManager = viewManager;
         this.youtubeApiService = youtubeApiService;
-
-        if (youtubeApiService == null) {
-            System.out.println("Error: youtubeApiService es null en GameplayController");
-        }
     }
+
+    public List<VideoData> fetchGameplays(String gameName) {
+        List<VideoData> videoDataList = new ArrayList<>();
+        try {
+            List<VideoData> videos = youtubeApiService.searchLatestVideosByGame(gameName);
+            videoDataList.addAll(videos);
+        } catch (Exception e) {
+            System.err.println("Error al buscar gameplays: " + e.getMessage());
+        }
+        return videoDataList;
+    }
+
 }
