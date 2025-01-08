@@ -204,24 +204,24 @@ public class ViewManager {
 
 
 
-    public void displayGameplayLinks(List<VideoData> videoUrls, String gameName) {
-        JFrame frame = new JFrame("Gameplays de " + gameName);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setSize(400, 300);
-
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-
-        for (VideoData video : videoUrls) {
-            JButton videoButton = new JButton(video.getVideoUrl());
-            videoButton.addActionListener(e -> openInBrowser(video.getVideoUrl()));
-            panel.add(videoButton);
-        }
-
-        JScrollPane scrollPane = new JScrollPane(panel);
-        frame.add(scrollPane);
-        frame.setVisible(true);
-    }
+//    public void displayGameplayLinks(List<VideoData> videoUrls, String gameName) {
+//        JFrame frame = new JFrame("Gameplays de " + gameName);
+//        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+//        frame.setSize(400, 300);
+//
+//        JPanel panel = new JPanel();
+//        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+//
+//        for (VideoData video : videoUrls) {
+//            JButton videoButton = new JButton(video.getVideoUrl());
+//            videoButton.addActionListener(e -> openInBrowser(video.getVideoUrl()));
+//            panel.add(videoButton);
+//        }
+//
+//        JScrollPane scrollPane = new JScrollPane(panel);
+//        frame.add(scrollPane);
+//        frame.setVisible(true);
+//    }
 
     public void displayGameplayLinksWithThumbnails(List<VideoData> videoDataList, JPanel gameplayPanel) {
         gameplayPanel.removeAll(); // Limpiar contenido anterior
@@ -235,16 +235,8 @@ public class ViewManager {
             videoPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5)); // Espaciado entre elementos
 
             // Miniatura
-            try {
-                ImageIcon thumbnailIcon = new ImageIcon(new URL(video.getThumbnailUrl()));
-                Image image = thumbnailIcon.getImage(); // Obtener la imagen
-                Image scaledImage = image.getScaledInstance(100, 100, Image.SCALE_SMOOTH); // Escalar la imagen
-                JLabel thumbnailLabel = new JLabel(new ImageIcon(scaledImage));
-                videoPanel.add(thumbnailLabel, BorderLayout.WEST);
-            } catch (Exception ex) {
-                JLabel thumbnailLabel = new JLabel("Thumbnail not available");
-                videoPanel.add(thumbnailLabel, BorderLayout.WEST);
-            }
+            JLabel thumbnailLabel = new JLabel(video.getScaledThumbnail(100, 100));
+            videoPanel.add(thumbnailLabel, BorderLayout.WEST);
 
             // Botón de enlace
             JButton videoButton = new JButton("Open in browser");
@@ -273,56 +265,56 @@ public class ViewManager {
         gameplayPanel.repaint();
     }
 
-    private void showVideosInNewWindow(List<VideoData> videoDataList) {
-        JFrame frame = new JFrame("Gameplays");
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setSize(800, 600);
-
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-
-        for (VideoData video : videoDataList) {
-            JPanel videoPanel = new JPanel(new BorderLayout());
-
-            // Thumbnail
-            try {
-                ImageIcon thumbnailIcon = new ImageIcon(new URL(video.getThumbnailUrl()));
-                Image image = thumbnailIcon.getImage(); // Get the image
-                Image scaledImage = image.getScaledInstance(100, 100, Image.SCALE_SMOOTH); // Scale the image
-                JLabel thumbnailLabel = new JLabel(new ImageIcon(scaledImage));
-                videoPanel.add(thumbnailLabel, BorderLayout.WEST);
-            } catch (Exception ex) {
-                JLabel thumbnailLabel = new JLabel("Thumbnail not available");
-                videoPanel.add(thumbnailLabel, BorderLayout.WEST);
-            }
-
-            // Link
-            JButton videoButton = new JButton("Open in browser");
-            videoButton.addActionListener(event -> {
-                try {
-                    Desktop.getDesktop().browse(new URL(video.getVideoUrl()).toURI());
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(panel, "Error opening link: " + ex.getMessage());
-                }
-            });
-            videoPanel.add(videoButton, BorderLayout.CENTER);
-
-            panel.add(videoPanel);
-        }
-
-        JScrollPane scrollPane = new JScrollPane(panel);
-        frame.add(scrollPane);
-        frame.setVisible(true);
-    }
-
-
-    private void openInBrowser(String url) {
-        try {
-            Desktop.getDesktop().browse(new URI(url));
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Error al abrir el enlace: " + e.getMessage());
-        }
-    }
+//    private void showVideosInNewWindow(List<VideoData> videoDataList) {
+//        JFrame frame = new JFrame("Gameplays");
+//        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+//        frame.setSize(800, 600);
+//
+//        JPanel panel = new JPanel();
+//        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+//
+//        for (VideoData video : videoDataList) {
+//            JPanel videoPanel = new JPanel(new BorderLayout());
+//
+//            // Thumbnail
+//            try {
+//                ImageIcon thumbnailIcon = new ImageIcon(new URL(video.getThumbnailUrl()));
+//                Image image = thumbnailIcon.getImage(); // Get the image
+//                Image scaledImage = image.getScaledInstance(100, 100, Image.SCALE_SMOOTH); // Scale the image
+//                JLabel thumbnailLabel = new JLabel(new ImageIcon(scaledImage));
+//                videoPanel.add(thumbnailLabel, BorderLayout.WEST);
+//            } catch (Exception ex) {
+//                JLabel thumbnailLabel = new JLabel("Thumbnail not available");
+//                videoPanel.add(thumbnailLabel, BorderLayout.WEST);
+//            }
+//
+//            // Link
+//            JButton videoButton = new JButton("Open in browser");
+//            videoButton.addActionListener(event -> {
+//                try {
+//                    Desktop.getDesktop().browse(new URL(video.getVideoUrl()).toURI());
+//                } catch (Exception ex) {
+//                    JOptionPane.showMessageDialog(panel, "Error opening link: " + ex.getMessage());
+//                }
+//            });
+//            videoPanel.add(videoButton, BorderLayout.CENTER);
+//
+//            panel.add(videoPanel);
+//        }
+//
+//        JScrollPane scrollPane = new JScrollPane(panel);
+//        frame.add(scrollPane);
+//        frame.setVisible(true);
+//    }
+//
+//
+//    private void openInBrowser(String url) {
+//        try {
+//            Desktop.getDesktop().browse(new URI(url));
+//        } catch (Exception e) {
+//            JOptionPane.showMessageDialog(null, "Error al abrir el enlace: " + e.getMessage());
+//        }
+//    }
 
 
 }
