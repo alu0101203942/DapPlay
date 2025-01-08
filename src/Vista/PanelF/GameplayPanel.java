@@ -1,9 +1,10 @@
-package src.Vista;
+package src.Vista.PanelF;
 
 import com.lukaspradel.steamapi.data.json.ownedgames.Game;
 import src.Controlador.GameplayController;
 import src.Modelo.API.YoutubeApiService;
-import src.Modelo.VideoData;
+import src.Modelo.Data.VideoData;
+import src.Vista.ViewManager;
 
 import javax.swing.*;
 import java.awt.*;

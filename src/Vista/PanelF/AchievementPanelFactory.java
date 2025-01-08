@@ -1,4 +1,4 @@
-package src.Vista;
+package src.Vista.PanelF;
 
 import javax.swing.*;
 import java.awt.*;

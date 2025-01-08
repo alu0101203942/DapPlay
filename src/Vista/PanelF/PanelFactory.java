@@ -1,4 +1,4 @@
-package src.Vista;
+package src.Vista.PanelF;
 
 public interface PanelFactory {
 }

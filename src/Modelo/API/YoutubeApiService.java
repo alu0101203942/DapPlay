@@ -2,7 +2,7 @@ package src.Modelo.API;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import src.Modelo.VideoData;
+import src.Modelo.Data.VideoData;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

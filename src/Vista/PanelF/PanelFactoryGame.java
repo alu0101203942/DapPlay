@@ -1,7 +1,8 @@
 // src/Vista/PanelFactoryGame.java
-package src.Vista;
+package src.Vista.PanelF;
 
 import com.lukaspradel.steamapi.data.json.ownedgames.Game;
+
 import java.awt.event.ActionListener;
 import javax.swing.JPanel;
 

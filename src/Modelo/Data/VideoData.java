@@ -1,4 +1,4 @@
-package src.Modelo;
+package src.Modelo.Data;
 
 public class VideoData {
     private final String videoUrl;

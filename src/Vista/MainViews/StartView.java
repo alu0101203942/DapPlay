@@ -1,10 +1,9 @@
-package src.Vista;
+package src.Vista.MainViews;
 
 import com.formdev.flatlaf.FlatDarkLaf;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 
 public class StartView {
     public JFrame frame;

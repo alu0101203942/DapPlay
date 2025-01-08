@@ -4,14 +4,14 @@ import com.lukaspradel.steamapi.data.json.ownedgames.Game;
 import com.lukaspradel.steamapi.data.json.playersummaries.Player;
 import com.lukaspradel.steamapi.data.json.friendslist.Friend;
 import src.Modelo.API.YoutubeApiService;
-import src.Modelo.FavoritesManager;
+import src.Modelo.Data.FavoritesManager;
 import src.Modelo.Sort.SortByName;
 import src.Modelo.Sort.SortByPlaytime;
 import src.Modelo.Sort.SortStrategy;
 import src.Modelo.API.SteamApiService;
-import src.Modelo.VideoData;
-import src.Vista.DashboardView;
-import src.Vista.UserPanelFactory;
+import src.Modelo.Data.VideoData;
+import src.Vista.MainViews.DashboardView;
+import src.Vista.PanelF.UserPanelFactory;
 import src.Vista.ViewManager;
 
 import javax.swing.*;

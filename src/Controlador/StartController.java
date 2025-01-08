@@ -1,12 +1,12 @@
 package src.Controlador;
 
 import src.Modelo.API.YoutubeApiService;
-import src.Modelo.FavoritesManager;
+import src.Modelo.Data.FavoritesManager;
 import src.Modelo.Sort.SortByPlaytime;
 import src.Modelo.Sort.SortStrategy;
 import src.Modelo.API.SteamApiService;
-import src.Vista.DashboardView;
-import src.Vista.StartView;
+import src.Vista.MainViews.DashboardView;
+import src.Vista.MainViews.StartView;
 
 import javax.swing.*;
 

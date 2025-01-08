@@ -4,7 +4,7 @@ package src;
 import src.Controlador.StartController;
 import src.Modelo.API.SteamApiService;
 import src.Modelo.API.YoutubeApiService;
-import src.Vista.StartView;
+import src.Vista.MainViews.StartView;
 
 public class Main {
     public static void main(String[] args) {

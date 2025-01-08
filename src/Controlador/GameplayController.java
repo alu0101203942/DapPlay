@@ -1,11 +1,10 @@
 package src.Controlador;
 
 import src.Modelo.API.YoutubeApiService;
-import src.Modelo.VideoData;
+import src.Modelo.Data.VideoData;
 import src.Vista.ViewManager;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class GameplayController {

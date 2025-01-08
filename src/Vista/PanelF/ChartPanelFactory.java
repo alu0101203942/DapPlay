@@ -1,10 +1,11 @@
-package src.Vista;
+package src.Vista.PanelF;
 
 import com.lukaspradel.steamapi.data.json.ownedgames.Game;
-import com.lukaspradel.steamapi.data.json.playersummaries.Player;
+import src.Vista.ChartStrategy.BarChartStrategy;
+import src.Vista.ChartStrategy.ChartStrategy;
+import src.Vista.ChartStrategy.PieChartStrategy;
 
 import javax.swing.*;
-import java.awt.event.ActionListener;
 import java.util.List;
 
 public class ChartPanelFactory implements PanelFactory {

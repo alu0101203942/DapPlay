@@ -1,4 +1,4 @@
-package src.Vista;
+package src.Vista.PanelF;
 
 import com.lukaspradel.steamapi.data.json.playersummaries.Player;
 

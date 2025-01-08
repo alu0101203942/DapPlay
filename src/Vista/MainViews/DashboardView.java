@@ -1,4 +1,4 @@
-package src.Vista;
+package src.Vista.MainViews;
 
 import com.formdev.flatlaf.FlatDarkLaf;
 

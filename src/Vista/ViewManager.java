@@ -5,9 +5,11 @@ package src.Vista;
 import com.lukaspradel.steamapi.data.json.playersummaries.Player;
 import src.Controlador.DashboardController;
 import src.Controlador.GameplayController;
-import src.Modelo.FavoritesManager;
+import src.Modelo.Data.FavoritesManager;
 import com.lukaspradel.steamapi.data.json.ownedgames.Game;
-import src.Modelo.VideoData;
+import src.Modelo.Data.VideoData;
+import src.Vista.MainViews.DashboardView;
+import src.Vista.PanelF.*;
 
 import javax.swing.*;
 import java.awt.*;

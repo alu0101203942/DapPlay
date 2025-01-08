@@ -1,4 +1,4 @@
-package src.Vista;
+package src.Vista.ChartStrategy;
 
 import com.lukaspradel.steamapi.data.json.ownedgames.Game;
 import org.jfree.chart.ChartFactory;
