@@ -50,8 +50,9 @@ public class YoutubeApiService {
     }
 
     public List<VideoData> searchLatestVideosByGame(String gameName) throws Exception {
+        // Construye la URL con el parámetro "order=date" para obtener los videos más recientes
         String urlString = String.format(
-                "https://www.googleapis.com/youtube/v3/search?part=snippet&q=%s+gameplay&type=video&maxResults=5&key=%s",
+                "https://www.googleapis.com/youtube/v3/search?part=snippet&q=%s+gameplay&type=video&maxResults=5&order=date&key=%s",
                 gameName.replace(" ", "%20"), apiKey);
         URL url = new URL(urlString);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -67,6 +68,7 @@ public class YoutubeApiService {
             }
             in.close();
 
+            // Procesa la respuesta JSON
             JSONObject jsonResponse = new JSONObject(response.toString());
             JSONArray items = jsonResponse.getJSONArray("items");
             List<VideoData> videoDataList = new ArrayList<>();
@@ -83,6 +85,8 @@ public class YoutubeApiService {
             throw new Exception("Error: Código de respuesta " + responseCode);
         }
     }
+
+
 
 
 }
