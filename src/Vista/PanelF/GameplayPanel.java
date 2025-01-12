@@ -14,10 +14,10 @@ import java.util.List;
 
 public class GameplayPanel implements PanelFactoryGame {
     private YoutubeApiService youtubeApiService;
-    private ViewManager viewManager;
+    //private ViewManager viewManager;
 
-    public GameplayPanel(ViewManager viewManager, YoutubeApiService youtubeApiService) {
-        this.viewManager = viewManager;
+    public GameplayPanel( YoutubeApiService youtubeApiService) {
+        //this.viewManager = viewManager;
         this.youtubeApiService = youtubeApiService;
     }
 
@@ -49,7 +49,7 @@ public class GameplayPanel implements PanelFactoryGame {
 
         loadGameplaysButton.addActionListener(e -> {
             // Pasa las instancias correctas de ViewManager y YoutubeApiService al constructor de GameplayController
-            GameplayController gameplayController = new GameplayController(viewManager, youtubeApiService);
+            GameplayController gameplayController = new GameplayController(youtubeApiService);
             List<VideoData> videos = gameplayController.fetchGameplays(game.getName());
 
             // Mostrar los videos en el panel

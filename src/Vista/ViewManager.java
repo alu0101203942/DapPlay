@@ -28,29 +28,40 @@ public class ViewManager {
     private final DashboardController dashboardController;
     private GameplayController gameplayController; // Cambiar a variable de instancia
 
-    public ViewManager(DashboardView view, DashboardController dashboardController) {
+    public ViewManager(DashboardView view, DashboardController dashboardController, GameplayController gameplayController) {
         this.dashboardView = view;
         this.dashboardController = dashboardController;
+        this.gameplayController = gameplayController;
     }
 
     public void setGameplayController(GameplayController gameplayController) {
         this.gameplayController = gameplayController;
     }
 
-//    public void displayUserInfo(Player user, int gameCount) {
-//        ImageIcon avatarIcon = new ImageIcon(user.getAvatarfull());
-//        dashboardView.avatarLabel.setIcon(avatarIcon);
-//        dashboardView.usernameLabel.setText("Username: " + user.getPersonaname());
-//
-//        dashboardView.gamesCountLabel.setText("Number of Games: " + gameCount);
-//
-//        ImageIcon backgroundIcon = new ImageIcon(user.getProfileurl()); // Assuming profileurl contains the background image URL
-//        JLabel backgroundLabel = new JLabel(backgroundIcon);
-//        dashboardView.backgroundPanel.add(backgroundLabel, BorderLayout.CENTER);
-//
-//        dashboardView.userPanel.revalidate();
-//        dashboardView.userPanel.repaint();
-//    }
+    public void displayUserInfo(ImageIcon avatarIcon, String username, int gameCount, String profileStatus, String connectionStatus, String profileUrl) {
+        // Configurar avatar
+        dashboardView.avatarLabel.setIcon(avatarIcon);
+
+        // Configurar etiquetas
+        dashboardView.usernameLabel.setText("Nombre: " + username);
+        dashboardView.gamesCountLabel.setText("Juegos: " + gameCount);
+        dashboardView.profileStatusLabel.setText("Estado del Perfil: " + profileStatus);
+        dashboardView.connectionStatusLabel.setText("Conexión: " + connectionStatus);
+
+        // Configurar botón para abrir el perfil
+        dashboardView.viewProfileButton.addActionListener(e -> {
+            try {
+                Desktop.getDesktop().browse(new URL(profileUrl).toURI());
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(dashboardView.frame, "Error al abrir el perfil en Steam: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        // Actualizar la vista
+        dashboardView.userPanel.revalidate();
+        dashboardView.userPanel.repaint();
+    }
+
 
     public void displayGames(List<Game> games, int currentPage, int pageSize, FavoritesManager favoritesManager) {
         dashboardView.gamesPanel.removeAll();
@@ -74,12 +85,13 @@ public class ViewManager {
 
             // Botón para ver logros
             JButton achievementsButton = new JButton("View Achievements");
-            achievementsButton.addActionListener(e -> dashboardController.fetchAchievements(game));
+            //achievementsButton.addActionListener(e -> dashboardController.fetchAchievements(game));
             buttonsPanel.add(achievementsButton); // Agregar al panel de botones
 
             // Botón para ver gameplay
             JButton gameplayButton = new JButton("View Gameplay");
-            gameplayButton.addActionListener(e -> dashboardController.viewGameplay(game));
+            //gameplayButton.addActionListener(e -> dashboardController.viewGameplay(game));
+            gameplayButton.addActionListener(e -> gameplayController.fetchGameplays(game.getName()));
             buttonsPanel.add(gameplayButton); // Agregar al panel de botones
 
             // Agregar el panel de botones al sur del gamePanel
@@ -321,5 +333,8 @@ public class ViewManager {
 //        }
 //    }
 
+    public void showError(String message) {
+        JOptionPane.showMessageDialog(dashboardView.frame, message, "Error", JOptionPane.ERROR_MESSAGE);
+    }
 
 }

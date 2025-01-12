@@ -53,4 +53,8 @@ public class StartView {
     public void show() {
         frame.setVisible(true);
     }
+    public void hide() { frame.setVisible(false); }
+    public void showError(String message) {
+        JOptionPane.showMessageDialog(frame, message, "Error", JOptionPane.ERROR_MESSAGE);
+    }
 }
