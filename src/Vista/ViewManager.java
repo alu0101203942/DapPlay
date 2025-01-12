@@ -3,6 +3,7 @@ package src.Vista;
 
 
 import com.lukaspradel.steamapi.data.json.playersummaries.Player;
+import src.Controlador.AchievementsController;
 import src.Controlador.DashboardController;
 import src.Controlador.GameplayController;
 import src.Modelo.Data.FavoritesManager;
@@ -27,10 +28,12 @@ public class ViewManager {
     private final DashboardView dashboardView;
     private final DashboardController dashboardController;
     private GameplayController gameplayController; // Cambiar a variable de instancia
+    private final AchievementsController achievementsController;
 
-    public ViewManager(DashboardView view, DashboardController dashboardController) {
+    public ViewManager(DashboardView view, DashboardController dashboardController, AchievementsController achievementsController) {
         this.dashboardView = view;
         this.dashboardController = dashboardController;
+        this.achievementsController = achievementsController;
     }
 
     public void setGameplayController(GameplayController gameplayController) {
@@ -74,7 +77,8 @@ public class ViewManager {
 
             // Botón para ver logros
             JButton achievementsButton = new JButton("View Achievements");
-            achievementsButton.addActionListener(e -> dashboardController.fetchAchievements(game));
+            // public void fetchAchievements(String steamId64, DashboardView dashboardView, Game selectedGame, ViewManager viewManager)
+            achievementsButton.addActionListener(e -> achievementsController.fetchAchievements(dashboardController.getUsername() , dashboardView, game, this));
             buttonsPanel.add(achievementsButton); // Agregar al panel de botones
 
             // Botón para ver gameplay

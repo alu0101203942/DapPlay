@@ -30,6 +30,7 @@ public class DashboardController {
     private final DashboardView dashboardView;
     private List<Game> games;
     private YoutubeApiService youtubeApiService;
+    private final AchievementsController achievementsController;
 
     private int currentPage = 0;
     private static final int PAGE_SIZE = 6;
@@ -42,8 +43,9 @@ public class DashboardController {
         this.dashboardView = view;
         this.youtubeApiService = youtubeApiService;
 
+        achievementsController = new AchievementsController(steamApiService);
         // Crear ViewManager primero
-        this.viewManager = new ViewManager(view, this);
+        this.viewManager = new ViewManager(view, this, achievementsController);
 
         // Crear GameplayController usando ViewManager
         GameplayController gameplayController = new GameplayController(viewManager, youtubeApiService);
@@ -53,6 +55,7 @@ public class DashboardController {
 
         // Registrar los observadores
         favoritesManager.addObserver(updatedGames -> viewManager.updateFavorites(updatedGames, favoritesManager));
+
 
         // Inicializar la interfaz
         fetchAndDisplayUserInfo();
@@ -144,7 +147,7 @@ public class DashboardController {
         }
     }
 
-
+    /*
     public void fetchAchievements(Game selectedGame) {
         try {
             String steamId64;
@@ -209,7 +212,7 @@ public class DashboardController {
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    */
 
 
 
@@ -233,13 +236,17 @@ public class DashboardController {
                     Game selectedGame = games.get(index);
 
                     // Mostrar logros del juego
-                    fetchAchievements(selectedGame);
+                    achievementsController.fetchAchievements(username, dashboardView, selectedGame, viewManager);
 
                     // Ver gameplay del juego
                     viewGameplay(selectedGame);
                 }
             }
         });
+    }
+
+    public String getUsername() {
+        return username;
     }
 
 
