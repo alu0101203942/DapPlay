@@ -31,4 +31,6 @@ public class UserModel {
     private boolean isSteamId64(String input) {
         return input.matches("\\d{17}");
     }
+
+
 }

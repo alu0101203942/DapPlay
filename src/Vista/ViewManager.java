@@ -38,29 +38,20 @@ public class ViewManager {
         this.gameplayController = gameplayController;
     }
 
-    public void displayUserInfo(ImageIcon avatarIcon, String username, int gameCount, String profileStatus, String connectionStatus, String profileUrl) {
-        // Configurar avatar
-        dashboardView.avatarLabel.setIcon(avatarIcon);
+    public void displayUserInfo(Player user, int gameCount) {
+        UserPanelFactory userPanelFactory = new UserPanelFactory();
+        JPanel userPanel = userPanelFactory.createPanel(user, gameCount);
 
-        // Configurar etiquetas
-        dashboardView.usernameLabel.setText("Nombre: " + username);
-        dashboardView.gamesCountLabel.setText("Juegos: " + gameCount);
-        dashboardView.profileStatusLabel.setText("Estado del Perfil: " + profileStatus);
-        dashboardView.connectionStatusLabel.setText("Conexión: " + connectionStatus);
-
-        // Configurar botón para abrir el perfil
-        dashboardView.viewProfileButton.addActionListener(e -> {
-            try {
-                Desktop.getDesktop().browse(new URL(profileUrl).toURI());
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(dashboardView.frame, "Error al abrir el perfil en Steam: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        });
+        // Reemplazar el contenido del panel en DashboardView
+        dashboardView.userPanel.removeAll();
+        dashboardView.userPanel.add(userPanel, BorderLayout.CENTER);
 
         // Actualizar la vista
         dashboardView.userPanel.revalidate();
         dashboardView.userPanel.repaint();
     }
+
+
 
 
     public void displayGames(List<Game> games, int currentPage, int pageSize, FavoritesManager favoritesManager) {

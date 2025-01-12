@@ -67,111 +67,78 @@ public class UserPanelFactory implements PanelFactoryUser {
 //        return userPanel;
 //    }
     public JPanel createPanel(Player user, int games) {
-        // Crear el panel principal
+        // Crear el panel principal para el usuario
         JPanel userPanel = new JPanel(new BorderLayout());
         userPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(Color.GRAY, 1),
-                BorderFactory.createEmptyBorder(MARGIN, MARGIN, MARGIN, MARGIN)
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)
         ));
 
-        // Obtener la imagen del avatar
-        String imageUrl = user.getAvatarfull();
+        // Avatar
+        JLabel avatarLabel = new JLabel();
         try {
-            URL url = new URL(imageUrl);
+            URL url = new URL(user.getAvatarfull());
             Image image = ImageIO.read(url);
-            if (image != null) {
-                Image scaledImage = image.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-                ImageIcon icon = new ImageIcon(scaledImage);
-                JLabel imageLabel = new JLabel(icon);
-                imageLabel.setPreferredSize(new Dimension(100, 100));
-                userPanel.add(imageLabel, BorderLayout.WEST);
-            } else {
-                userPanel.add(new JLabel("No Image"), BorderLayout.WEST);
-            }
-        } catch (IOException ex) {
-            userPanel.add(new JLabel("Failed to load image"), BorderLayout.WEST);
+            ImageIcon avatarIcon = new ImageIcon(image.getScaledInstance(80, 80, Image.SCALE_SMOOTH));
+            avatarLabel.setIcon(avatarIcon);
+        } catch (Exception e) {
+            avatarLabel.setText("No Avatar");
         }
+        avatarLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        avatarLabel.setPreferredSize(new Dimension(80, 80));
 
-        // Crear el panel de texto
-        JPanel textPanel = new JPanel(new GridBagLayout());
-        textPanel.setBackground(new Color(240, 240, 240));
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.gridx = 0;
+        // Información del usuario
+        JPanel userInfoPanel = new JPanel();
+        userInfoPanel.setLayout(new BoxLayout(userInfoPanel, BoxLayout.Y_AXIS));
 
-        // Nombre del usuario
-        gbc.gridy = 0;
-        JLabel nameLabel = new JLabel(user.getPersonaname());
-        nameLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        nameLabel.setForeground(Color.BLACK);
-        textPanel.add(nameLabel, gbc);
-
-        // Número de juegos
-        gbc.gridy = 1;
+        JLabel usernameLabel = new JLabel("Nombre: " + user.getPersonaname());
         JLabel gamesCountLabel = new JLabel("Juegos: " + games);
-        gamesCountLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        gamesCountLabel.setForeground(Color.DARK_GRAY);
-        textPanel.add(gamesCountLabel, gbc);
+        JLabel profileStatusLabel = new JLabel("Estado del Perfil: " +
+                (user.getCommunityvisibilitystate() == 3 ? "Público" : "Privado"));
+        JLabel connectionStatusLabel = new JLabel("Conexión: " + mapConnectionStatus(user.getPersonastate().intValue()));
 
-        // Estado del perfil
-        gbc.gridy = 2;
-        String profileStatus = user.getCommunityvisibilitystate() == 3 ? "Público" : "Privado";
-        JLabel profileStatusLabel = new JLabel("Estado del Perfil: " + profileStatus);
-        profileStatusLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        profileStatusLabel.setForeground(Color.DARK_GRAY);
-        textPanel.add(profileStatusLabel, gbc);
+        usernameLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        gamesCountLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        profileStatusLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        connectionStatusLabel.setFont(new Font("Arial", Font.PLAIN, 12));
 
-        // Estado de conexión
-        gbc.gridy = 3;
-        String personalStatus;
-        switch (user.getPersonastate().intValue()) {
-            case 0:
-                personalStatus = "Offline";
-                break;
-            case 1:
-                personalStatus = "Online";
-                break;
-            case 2:
-                personalStatus = "Busy";
-                break;
-            case 3:
-                personalStatus = "Away";
-                break;
-            case 4:
-                personalStatus = "Snooze";
-                break;
-            case 5:
-                personalStatus = "Looking to trade";
-                break;
-            case 6:
-                personalStatus = "Looking to play";
-                break;
-            default:
-                personalStatus = "Unknown";
-                break;
-        }
-        JLabel peronalStatusLabel = new JLabel("Conexión: " + personalStatus);
-        peronalStatusLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        peronalStatusLabel.setForeground(Color.DARK_GRAY);
-        textPanel.add(peronalStatusLabel, gbc);
+        userInfoPanel.add(usernameLabel);
+        userInfoPanel.add(gamesCountLabel);
+        userInfoPanel.add(profileStatusLabel);
+        userInfoPanel.add(connectionStatusLabel);
 
-        // Botón para abrir el perfil en Steam
-        gbc.gridy = 5;
+        // Botón para abrir perfil
         JButton viewProfileButton = new JButton("Ver Perfil en Steam");
         viewProfileButton.addActionListener(e -> {
             try {
                 Desktop.getDesktop().browse(new URL(user.getProfileurl()).toURI());
             } catch (Exception ex) {
-                ex.printStackTrace();
+                JOptionPane.showMessageDialog(userPanel, "Error al abrir el perfil: " + ex.getMessage());
             }
         });
-        textPanel.add(viewProfileButton, gbc);
+        userInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        userInfoPanel.add(viewProfileButton);
 
-        // Agregar el panel de texto al centro
-        userPanel.add(textPanel, BorderLayout.CENTER);
+        // Combinar avatar y texto en un solo panel
+        userPanel.add(avatarLabel, BorderLayout.WEST);
+        userPanel.add(userInfoPanel, BorderLayout.CENTER);
 
         return userPanel;
     }
+
+    private String mapConnectionStatus(int status) {
+        return switch (status) {
+            case 0 -> "Offline";
+            case 1 -> "Online";
+            case 2 -> "Busy";
+            case 3 -> "Away";
+            case 4 -> "Snooze";
+            case 5 -> "Looking to Trade";
+            case 6 -> "Looking to Play";
+            default -> "Unknown";
+        };
+    }
+
+
 
 }
