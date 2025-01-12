@@ -19,7 +19,7 @@ public class StartView {
         }
 
         // Configurar la ventana principal
-        frame = new JFrame("Inicio - Steam Dashboard");
+        frame = new JFrame("Inicio - DapPlay");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(400, 200);
         frame.setLayout(new BorderLayout());

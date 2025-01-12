@@ -77,23 +77,29 @@ public class SteamApiService {
     }
 
     public int getOwnedProductsCount(String steamId64) throws SteamApiException {
-        SteamWebApiClient client = new SteamWebApiClient.SteamWebApiClientBuilder(apiKey).build();
-        var request = SteamWebApiRequestFactory.createGetOwnedGamesRequest(
-                steamId64,
-                true,  // include_appinfo -> Incluye información detallada de los juegos
-                false, // include_played_free_games -> Excluir juegos gratuitos no comprados
-                Collections.emptyList() // No filtrar por AppIDs específicos
-        );
-        GetOwnedGames ownedGames = client.processRequest(request);
-        if (ownedGames != null && ownedGames.getResponse() != null) {
+        String url = "https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=" + apiKey + "&steamid=" + steamId64 + "&include_played_free_games=true&include_free_sub=true&skip_unvetted_apps=false";
+        try {
+            HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+            conn.setRequestMethod("GET");
 
-            return (int) ownedGames.getResponse().getGames().stream()
-                    .filter(game -> !game.getName().toLowerCase().contains("demo")) // Excluir demos
-                    .filter(game -> !game.getName().toLowerCase().contains("beta")) // Excluir betas si es necesario
-                    .count();
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String inputLine;
+            StringBuilder content = new StringBuilder();
+            while ((inputLine = in.readLine()) != null) {
+                content.append(inputLine);
+                System.out.println(inputLine);
+            }
+            in.close();
+            conn.disconnect();
 
-        } else {
-            return 0;
+            JSONObject json = new JSONObject(content.toString());
+            if (json.has("response") && json.getJSONObject("response").has("game_count")) {
+                return json.getJSONObject("response").getInt("game_count");
+            } else {
+                throw new SteamApiException("Failed to get owned games count");
+            }
+        } catch (Exception e) {
+            throw new SteamApiException("Failed to get owned games count", e);
         }
     }
 

@@ -79,7 +79,12 @@ public class DashboardView {
         gamesPanel.setLayout(new GridLayout(5, 1, 10, 10));
 
         statsPanel = new JPanel();
-        chartTypeComboBox = new JComboBox<>(new String[]{"Gráfico de Barras", "Gráfico de Sectores"});
+        chartTypeComboBox = new JComboBox<>(new String[]{
+                "Gráfico de Barras",
+                "Gráfico de Sectores",
+                "Gráfico de Líneas",
+                "Gráfico de Dispersión"
+        });
         statsPanel.add(chartTypeComboBox, BorderLayout.NORTH);
         chartTypeComboBox.setSelectedIndex(0);
 

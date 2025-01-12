@@ -85,7 +85,12 @@ public class DashboardController {
 
     private void fetchAndDisplayUserInfo() {
         try {
-            String steamId64 = isSteamId64(username) ? username : steamApiService.getSteamIdFromUsername(username);
+            String steamId64;
+            if (isSteamId64(username)) {
+                steamId64 = username;
+            } else {
+                steamId64 = steamApiService.getSteamIdFromUsername(username);
+            }
             List<Player> userInfoList = steamApiService.getPlayerSummaries(steamId64);
 
             if (!userInfoList.isEmpty()) {
@@ -139,15 +144,15 @@ public class DashboardController {
         }
     }
 
-    private String extractVideoId(String jsonResponse) {
-        // Implement the logic to extract video ID from the JSON response
-        // This is a placeholder implementation
-        return "extractedVideoId";
-    }
 
     public void fetchAchievements(Game selectedGame) {
         try {
-            String steamId64 = isSteamId64(username) ? username : steamApiService.getSteamIdFromUsername(username);
+            String steamId64;
+            if (isSteamId64(username)) {
+                steamId64 = username;
+            } else {
+                steamId64 = steamApiService.getSteamIdFromUsername(username);
+            }
             List<Map<String, Object>> rawAchievements = SteamApiService.fetchAchievements(
                     steamId64,
                     String.valueOf(selectedGame.getAppid()),
