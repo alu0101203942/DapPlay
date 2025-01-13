@@ -6,7 +6,9 @@ import src.Vista.ChartStrategy.Decorator.ColorDecorator;
 import src.Vista.ChartStrategy.Decorator.TitleDecorator;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.List;
+
 public class ChartPanelFactory implements PanelFactory {
 
     public JPanel createChart(String chartType, List<Game> games) {
@@ -21,20 +23,26 @@ public class ChartPanelFactory implements PanelFactory {
                 chartStrategy = new PieChartStrategy();
                 break;
             case "Gráfico de Líneas":
-                chartStrategy = new LineChartStrategy(); // Nuevo tipo de gráfico
+                chartStrategy = new LineChartStrategy();
                 break;
             case "Gráfico de Dispersión":
-                chartStrategy = new ScatterChartStrategy(); // Nuevo tipo de gráfico
+                chartStrategy = new ScatterChartStrategy();
                 break;
             default:
                 throw new IllegalArgumentException("Tipo de gráfico no soportado: " + chartType);
         }
 
-        // Aplicar decoradores (ejemplo: añadir título y color)
+        // Aplicar decoradores (título y color)
         chartStrategy = new TitleDecorator(chartStrategy, "Gráfico: " + chartType);
-        chartStrategy = new ColorDecorator(chartStrategy, "Azul");
+        chartStrategy = new ColorDecorator(chartStrategy, "#4285F4");
 
         // Crear el panel del gráfico
-        return chartStrategy.createChart(games);
+        JPanel chartPanel = chartStrategy.createChart(games);
+
+        // Ajustar propiedades del panel
+        chartPanel.setPreferredSize(new Dimension(600, 400)); // Tamaño estándar
+        chartPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1)); // Borde para mejor visibilidad
+
+        return chartPanel;
     }
 }

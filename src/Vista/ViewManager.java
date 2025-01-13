@@ -98,24 +98,23 @@ public class ViewManager {
 //        dashboardView.statsPanel.repaint();
 //    }
 //
-//    private void showChartInNewWindow(JPanel chartPanel) {
-//        // Crear un nuevo JFrame para mostrar el gráfico
-//        JFrame frame = new JFrame("Gráfico Ampliado");
-//        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Cerrar solo la ventana del gráfico
-//        frame.setSize(800, 600); // Tamaño de la ventana
-//
-//        // Crear un contenedor para el gráfico
-//        JPanel enlargedChartPanel = new JPanel(new BorderLayout());
-//        enlargedChartPanel.add(chartPanel, BorderLayout.CENTER); // Agregar el gráfico al panel
-//
-//        // Agregar el panel al frame
-//        frame.add(enlargedChartPanel);
-//
-//        // Mostrar la ventana
-//        frame.setVisible(true);
-//    }
+    private void showChartInNewWindow(JPanel chartPanel) {
+        // Crear un nuevo JFrame para mostrar el gráfico
+        JFrame frame = new JFrame("Gráfico Ampliado");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Cerrar solo la ventana del gráfico
+        frame.setSize(800, 600); // Tamaño de la ventana
 
-    // In src/Vista/ViewManager.java
+        // Crear un contenedor para el gráfico
+        JPanel enlargedChartPanel = new JPanel(new BorderLayout());
+        enlargedChartPanel.add(chartPanel, BorderLayout.CENTER); // Agregar el gráfico al panel
+
+        // Agregar el panel al frame
+        frame.add(enlargedChartPanel);
+
+        // Mostrar la ventana
+        frame.setVisible(true);
+    }
+
 
     public void updateGameplayPanel(List<GameplayModel> gameplays) {
         // Verificar si hay datos válidos

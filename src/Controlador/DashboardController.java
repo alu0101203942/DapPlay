@@ -28,6 +28,7 @@ public class DashboardController {
     private AchievementsController achievementsController;
     private GameplayController gameplayController;
     private UserController userController;
+    private ChartController chartController;
 
     private int currentPage = 0;
     private static final int PAGE_SIZE = 6;
@@ -42,7 +43,6 @@ public class DashboardController {
         this.username = username;
         this.youtubeApiService = youtubeApiService;
         this.user = user;
-        this.dashboardView = view; // Initialize dashboardView
         this.dashboardView = view;
 
         // Create GameplayController
@@ -50,6 +50,7 @@ public class DashboardController {
         achievementsController = new AchievementsController(steamApiService);
         new ChartController(dashboardView, favoritesManager);
         userController = new UserController(view, user);
+        chartController = new ChartController(view, favoritesManager);
 
         // Create ViewManager with DashboardController and GameplayController
         this.viewManager = new ViewManager(view, this, achievementsController, youtubeApiService);
@@ -62,11 +63,6 @@ public class DashboardController {
 
         // Setup listeners
         setupListeners(view);
-    }
-
-    private void updateChart() {
-        String selectedType = (String) dashboardView.chartTypeComboBox.getSelectedItem();
-        //viewManager.updateChart(selectedType, favoritesManager.getFavoriteGames());
     }
 
     public void fetchAndDisplayUserInfo() {
@@ -118,7 +114,7 @@ public class DashboardController {
     private void setupListeners(DashboardView view) {
         view.nextButton.addActionListener(e -> nextPage());
         view.prevButton.addActionListener(e -> prevPage());
-        view.chartTypeComboBox.addActionListener(e -> updateChart());
+        view.chartTypeComboBox.addActionListener(e -> chartController.updateChart());
     }
 
 
