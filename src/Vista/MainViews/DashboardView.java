@@ -105,6 +105,7 @@ public class DashboardView {
         // Panel de juegos favoritos
         favoritesPanel = new JPanel();
         favoritesPanel.setPreferredSize(new Dimension(250, 300));
+        favoritesPanel.setLayout(new BoxLayout(favoritesPanel, BoxLayout.Y_AXIS));
         favoritesPanel.setBorder(BorderFactory.createTitledBorder("Juegos Favoritos"));
         gbc.gridx = 0;
         gbc.gridy = 1;
