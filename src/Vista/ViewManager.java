@@ -184,6 +184,21 @@ public class ViewManager {
         dashboardView.friendsPanel.revalidate();
         dashboardView.friendsPanel.repaint();
     }
+
+    public void updateFavorites(List<Game> updatedGames, FavoritesManager favoritesManager) {
+        dashboardView.favoritesPanel.removeAll();
+        FavoritePanelFactory favoritePanelFactory = new FavoritePanelFactory();
+
+        List<Game> favoriteGames = favoritesManager.getFavoriteGames();
+
+        for (Game game : favoriteGames) {
+            JPanel favoritePanel = favoritePanelFactory.createPanel(game, e -> favoritesManager.removeFavorite(game));
+            dashboardView.favoritesPanel.add(favoritePanel);
+        }
+        updateChart(Objects.requireNonNull(dashboardView.chartTypeComboBox.getSelectedItem()).toString(), favoriteGames);
+        dashboardView.favoritesPanel.revalidate();
+        dashboardView.favoritesPanel.repaint();
+    }
 }
 
 //    public void displayAchievements(List<Map<String, Object>> unlockedAchievements, List<Map<String, Object>> lockedAchievements) throws MalformedURLException {
@@ -200,21 +215,6 @@ public class ViewManager {
 //
 //        dashboardView.achievementsPanel.revalidate();
 //        dashboardView.achievementsPanel.repaint();
-//    }
-
-//    public void updateFavorites(List<Game> updatedGames, FavoritesManager favoritesManager) {
-//        dashboardView.favoritesPanel.removeAll();
-//        FavoritePanelFactory favoritePanelFactory = new FavoritePanelFactory();
-//
-//        List<Game> favoriteGames = favoritesManager.getFavoriteGames();
-//
-//        for (Game game : favoriteGames) {
-//            JPanel favoritePanel = favoritePanelFactory.createPanel(game, e -> favoritesManager.removeFavorite(game)); // Añadir lógica para eliminar
-//            dashboardView.favoritesPanel.add(favoritePanel);
-//        }
-//        updateChart(Objects.requireNonNull(dashboardView.chartTypeComboBox.getSelectedItem()).toString(), favoriteGames);
-//        dashboardView.favoritesPanel.revalidate();
-//        dashboardView.favoritesPanel.repaint();
 //    }
 //
 //    public void updateChart(String chartType, List<Game> favoriteGames) {

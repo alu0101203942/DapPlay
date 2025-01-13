@@ -15,8 +15,3 @@ public class Main {
         startView.show();
     }
 }
-
-
-
-
-

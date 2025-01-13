@@ -47,6 +47,7 @@ public class DashboardController {
         achievementsController = new AchievementsController(steamApiService);
         // Crear ViewManager con DashboardController y GameplayController
         this.viewManager = new ViewManager(view, this, achievementsController);
+        favoritesManager.addObserver(updatedGames -> viewManager.updateFavorites(updatedGames, favoritesManager));
 
         fetchAndDisplayUserInfo();
         fetchGames();
