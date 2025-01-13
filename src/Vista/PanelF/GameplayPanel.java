@@ -17,7 +17,7 @@ public class GameplayPanel implements PanelFactoryGame {
         this.gameplayController = gameplayController;
     }
 
-    @Override
+//    @Override
 //    public JPanel createPanel(Game game, ActionListener removeAction) {
 //        // Crear el panel principal
 //        JPanel panel = new JPanel(new BorderLayout());
@@ -96,7 +96,7 @@ public class GameplayPanel implements PanelFactoryGame {
 //        contentPanel.revalidate();
 //        contentPanel.repaint();
 //    }
-
+    @Override
     public JPanel createPanel(Game game, ActionListener removeAction) {
         // Crear el panel principal
         JPanel panel = new JPanel(new BorderLayout());

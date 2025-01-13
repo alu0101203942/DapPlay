@@ -38,6 +38,7 @@ public class YoutubeApiService {
         URL url = new URL(urlString);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
+        System.out.println("Sending GET request to: " + urlString);
 
         int responseCode = conn.getResponseCode();
         if (responseCode == 200) {
@@ -56,21 +57,11 @@ public class YoutubeApiService {
 
             for (int i = 0; i < items.length(); i++) {
                 JSONObject video = items.getJSONObject(i);
-
-                // Obtener ID del video
                 String videoId = video.getJSONObject("id").getString("videoId");
                 String videoUrl = "https://www.youtube.com/watch?v=" + videoId;
+                String thumbnailUrl = "https://img.youtube.com/vi/" + videoId + "/hqdefault.jpg";
 
-                // Obtener título y descripción
-                JSONObject snippet = video.getJSONObject("snippet");
-                String title = snippet.getString("title").toLowerCase();
-                String description = snippet.optString("description", "").toLowerCase();
-
-                // Verificar si el título o la descripción contienen palabras clave relacionadas con gameplays
-                if (title.contains("gameplay") || description.contains("gameplay")) {
-                    String thumbnailUrl = "https://img.youtube.com/vi/" + videoId + "/hqdefault.jpg";
-                    videoDataList.add(new GameplayModel(videoUrl, thumbnailUrl));
-                }
+                videoDataList.add(new GameplayModel(thumbnailUrl, videoUrl));
             }
 
             if (videoDataList.isEmpty()) {
@@ -82,7 +73,4 @@ public class YoutubeApiService {
             throw new Exception("Error: Código de respuesta " + responseCode);
         }
     }
-
-
-
 }

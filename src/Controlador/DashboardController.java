@@ -54,7 +54,6 @@ public class DashboardController {
         // Create ViewManager with DashboardController and GameplayController
         this.viewManager = new ViewManager(view, this, achievementsController, youtubeApiService);
         // Crear ViewManager con DashboardController y GameplayController
-        this.viewManager = new ViewManager(view, this, achievementsController);
         favoritesManager.addObserver(updatedGames -> viewManager.updateFavorites(updatedGames, favoritesManager));
 
         fetchAndDisplayUserInfo();

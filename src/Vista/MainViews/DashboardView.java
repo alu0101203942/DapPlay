@@ -4,6 +4,7 @@ import com.formdev.flatlaf.FlatDarkLaf;
 
 import javax.swing.*;
 import java.awt.*;
+
 public class DashboardView {
     public JFrame frame;
     public JPanel userPanel, favoritesPanel, gamesPanel, statsPanel, achievementsPanel, friendsPanel, gameplayPanel;
@@ -37,7 +38,7 @@ public class DashboardView {
         // Panel de información del usuario
         userPanel = new JPanel(new BorderLayout());
         userPanel.setBorder(BorderFactory.createTitledBorder("Información del Usuario"));
-        userPanel.setPreferredSize(new Dimension(250, 120)); // Tamaño reducido
+        userPanel.setPreferredSize(new Dimension(250, 120));
 
         // Avatar
         avatarLabel = new JLabel();
@@ -93,7 +94,6 @@ public class DashboardView {
         // Añadir contenido al panel principal
         userPanel.add(userContentPanel, BorderLayout.CENTER);
 
-
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 1;
@@ -102,24 +102,27 @@ public class DashboardView {
         gbc.weighty = 0.01;
         dashboardPanel.add(userPanel, gbc);
 
-        // Panel de juegos favoritos
+        // Panel de juegos favoritos con scroll
         favoritesPanel = new JPanel();
-        favoritesPanel.setPreferredSize(new Dimension(250, 300));
         favoritesPanel.setLayout(new BoxLayout(favoritesPanel, BoxLayout.Y_AXIS));
         favoritesPanel.setBorder(BorderFactory.createTitledBorder("Juegos Favoritos"));
+        JScrollPane favoritesScroll = new JScrollPane(favoritesPanel);
+        favoritesScroll.setPreferredSize(new Dimension(250, 300));
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.weighty = 0.4;
-        dashboardPanel.add(favoritesPanel, gbc);
+        dashboardPanel.add(favoritesScroll, gbc);
 
-        // Panel de gameplays
+        // Panel de gameplays con scroll
         gameplayPanel = new JPanel();
-        gameplayPanel.setPreferredSize(new Dimension(250, 300));
+        gameplayPanel.setLayout(new BoxLayout(gameplayPanel, BoxLayout.Y_AXIS));
         gameplayPanel.setBorder(BorderFactory.createTitledBorder("Gameplays"));
+        JScrollPane gameplayScroll = new JScrollPane(gameplayPanel);
+        gameplayScroll.setPreferredSize(new Dimension(250, 300));
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.weighty = 0.4;
-        dashboardPanel.add(gameplayPanel, gbc);
+        dashboardPanel.add(gameplayScroll, gbc);
 
         // Panel de estadísticas
         statsPanel = new JPanel(new BorderLayout());
@@ -142,7 +145,6 @@ public class DashboardView {
         // Panel de juegos del usuario
         gamesPanel = new JPanel();
         gamesPanel.setBorder(BorderFactory.createTitledBorder("Juegos del Usuario"));
-        statsPanel.setPreferredSize(new Dimension(500, 300));
         gamesPanel.setLayout(new GridLayout(5, 1, 10, 10));
         gbc.gridx = 1;
         gbc.gridy = 2;
@@ -173,7 +175,6 @@ public class DashboardView {
         gbc.weightx = 0.3;
         gbc.weighty = 0.2;
         dashboardPanel.add(achievementsPanel, gbc);
-
 
         // Panel inferior con botones de navegación
         JPanel navigationPanel = new JPanel();

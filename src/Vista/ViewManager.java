@@ -15,15 +15,11 @@ import src.Vista.PanelF.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.net.MalformedURLException;
 
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.net.URI;
 
 public class ViewManager {
     private final DashboardView dashboardView;
@@ -122,18 +118,32 @@ public class ViewManager {
     // In src/Vista/ViewManager.java
 
     public void updateGameplayPanel(List<GameplayModel> gameplays) {
+        // Verificar si hay datos válidos
+        if (gameplays == null || gameplays.isEmpty()) {
+            System.out.println("No hay gameplays disponibles para mostrar.");
+            JLabel noGameplaysLabel = new JLabel("No se encontraron gameplays para este juego.");
+            dashboardView.gameplayPanel.removeAll();
+            dashboardView.gameplayPanel.add(noGameplaysLabel);
+            dashboardView.gameplayPanel.revalidate();
+            dashboardView.gameplayPanel.repaint();
+            return;
+        }
+
+        // Limpia el contenido previo
         dashboardView.gameplayPanel.removeAll();
         dashboardView.gameplayPanel.setLayout(new BoxLayout(dashboardView.gameplayPanel, BoxLayout.Y_AXIS));
 
         for (GameplayModel gameplay : gameplays) {
+            System.out.println("Procesando gameplay: " + gameplay.getVideoUrl());
+
+            // Crear un panel para cada video
             JPanel videoPanel = new JPanel(new BorderLayout());
             videoPanel.setBorder(BorderFactory.createCompoundBorder(
                     BorderFactory.createLineBorder(Color.GRAY, 1),
                     BorderFactory.createEmptyBorder(10, 10, 10, 10)
             ));
-            videoPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 120)); // Adjust the height of each panel
 
-            // Thumbnail
+            // Miniatura del video
             try {
                 URL thumbnailUrl = new URL(gameplay.getThumbnailUrl());
                 ImageIcon thumbnailIcon = new ImageIcon(thumbnailUrl);
@@ -141,11 +151,12 @@ public class ViewManager {
                 JLabel thumbnailLabel = new JLabel(new ImageIcon(scaledImage));
                 videoPanel.add(thumbnailLabel, BorderLayout.WEST);
             } catch (Exception ex) {
+                System.out.println("Error cargando miniatura: " + ex.getMessage());
                 JLabel thumbnailLabel = new JLabel("Thumbnail not available");
                 videoPanel.add(thumbnailLabel, BorderLayout.WEST);
             }
 
-            // Button to open in browser
+            // Botón para abrir en navegador
             JButton videoButton = new JButton("Open in browser");
             videoButton.addActionListener(event -> {
                 try {
@@ -154,11 +165,19 @@ public class ViewManager {
                     JOptionPane.showMessageDialog(dashboardView.gameplayPanel, "Error opening link: " + ex.getMessage());
                 }
             });
-            videoPanel.add(videoButton, BorderLayout.CENTER);
+
+            // Contenedor para el botón y título opcional
+            JPanel centerPanel = new JPanel(new BorderLayout());
+            JLabel titleLabel = new JLabel("Video: " + gameplay.getVideoUrl()); // Mostrar enlace para depuración
+            centerPanel.add(titleLabel, BorderLayout.NORTH);
+            centerPanel.add(videoButton, BorderLayout.CENTER);
+            videoPanel.add(centerPanel, BorderLayout.CENTER);
 
             dashboardView.gameplayPanel.add(videoPanel);
         }
 
+        // Forzar la actualización visual
+        dashboardView.gameplayPanel.invalidate();
         dashboardView.gameplayPanel.revalidate();
         dashboardView.gameplayPanel.repaint();
     }
@@ -242,7 +261,7 @@ public class ViewManager {
             JPanel favoritePanel = favoritePanelFactory.createPanel(game, e -> favoritesManager.removeFavorite(game));
             dashboardView.favoritesPanel.add(favoritePanel);
         }
-        updateChart(Objects.requireNonNull(dashboardView.chartTypeComboBox.getSelectedItem()).toString(), favoriteGames);
+        //updateChart(Objects.requireNonNull(dashboardView.chartTypeComboBox.getSelectedItem()).toString(), favoriteGames);
         dashboardView.favoritesPanel.revalidate();
         dashboardView.favoritesPanel.repaint();
     }
