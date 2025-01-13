@@ -19,26 +19,47 @@ El proyecto está diseñado para integrarse con diversas APIs, como **Steam** pa
 ### 1. **Modelo**
 
 - **SteamApiService**: Interactúa con la API de Steam.
+- **YoutubeApiService**: Interactúa con la API de YouTube.
 - **FavoritesManager**: Gestiona los juegos favoritos.
+- **FavoritesObserver**: Interfaz para implementar el observador.
+- **GameplayModel**: Modelo que representa los datos de gameplay.
+- **UserModel**: Modelo que contiene los datos del usuario.
 - **SortStrategy**: Define las estrategias para ordenar los juegos.
 - **SortByName**: Estrategia para ordenar juegos por nombre.
 - **SortByPlaytime**: Estrategia para ordenar juegos por tiempo de juego.
+- **ImageUtil**: Utilidad para manejar imágenes dentro de la aplicación.
 
 ### 2. **Vista**
 
+- **ChartStrategy**: Interfaz para la creación de gráficos.
+- **BarChartStrategy**: Estrategia para mostrar gráficos de barras.
+- **PieChartStrategy**: Estrategia para mostrar gráficos de pastel.
+- **LineChartStrategy**: Estrategia para mostrar gráficos de líneas.
+- **ScatterChartStrategy**: Estrategia para mostrar gráficos de dispersión.
+- **BarAchievementsChart**: Estrategia específica para los gráficos de logros desbloqueados.
+- **ChartDecorator**: Clase decoradora para personalizar los gráficos.
+- **ColorDecorator**: Decorador para agregar color a los gráficos.
+- **TitleDecorator**: Decorador para agregar títulos a los gráficos.
 - **DashboardView**: Vista principal que muestra las estadísticas y los gráficos.
 - **StartView**: Vista de inicio para la aplicación.
-- **ChartStrategy**: Interfaz para la creación de gráficos.
-- **BarChartStrategy** y **PieChartStrategy**: Implementaciones específicas para gráficos de barras y pastel.
-- **PanelFactory**: Factory para crear los paneles de gráficos.
 - **AchievementPanelFactory**: Factory para crear los paneles de logros.
+- **ChartPanelFactory**: Factory para crear paneles con gráficos.
+- **FavoritePanelFactory**: Factory para crear paneles con juegos favoritos.
+- **FriendPanelFactory**: Factory para crear paneles con amigos.
+- **GamePanelFactory**: Factory para crear paneles con juegos.
+- **GameplayPanel**: Panel que muestra los detalles del gameplay.
+- **PanelFactory**: Factory general para crear diferentes tipos de paneles.
+- **UserPanelFactory**: Factory para crear paneles con información de usuarios.
+- **ViewManager**: Gestiona la vista general de la aplicación.
 
 ### 3. **Controlador**
 
+- **AchievementsController**: Controla la carga y visualización de logros.
+- **ChartController**: Controla la generación de gráficos en la vista.
 - **DashboardController**: Controla la vista principal y maneja la interacción con la API.
 - **StartController**: Controla la vista de inicio de la aplicación.
-- **ChartController**: Controla la generación de gráficos en la vista.
-- **AchievementsController**: Maneja la carga y visualización de logros.
+- **UserController**: Controla la información del usuario y su visualización.
+- **GameplayController**: Controla la visualización de los gameplays relacionados con los juegos.
 
 ## Patrones de Diseño Implementados
 
@@ -60,3 +81,11 @@ El proyecto está diseñado para integrarse con diversas APIs, como **Steam** pa
 ### Interacción Social:
 - Los usuarios pueden ver a sus amigos y sus logros directamente desde la vista principal.
 
+## Instalación
+
+### Pasos de Instalación
+
+1. **Clona el repositorio**:
+
+   ```bash
+   git clone https://github.com/alu0101203942/DapPlay.git
