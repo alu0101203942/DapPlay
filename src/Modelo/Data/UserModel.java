@@ -28,7 +28,7 @@ public class UserModel {
         return steamApiService.getOwnedProductsCount(steamId64);
     }
 
-    private boolean isSteamId64(String input) {
+    public boolean isSteamId64(String input) {
         return input.matches("\\d{17}");
     }
 
