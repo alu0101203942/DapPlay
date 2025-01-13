@@ -1,5 +1,7 @@
 package src.Vista.PanelF;
 
+import src.Modelo.ImageUtil;
+
 import javax.swing.*;
 import java.awt.*;
 import java.net.MalformedURLException;
@@ -8,6 +10,11 @@ import java.util.List;
 import java.util.Map;
 
 public class AchievementPanelFactory implements PanelFactory {
+    private JPanel achievementsPanel;
+
+    public AchievementPanelFactory() {
+        this.achievementsPanel = new JPanel();
+    }
 
     public JPanel createPanel(List<Map<String, Object>> achievements, String title, Color titleColor) throws MalformedURLException {
         JPanel achievementsContainer = new JPanel();
@@ -36,12 +43,9 @@ public class AchievementPanelFactory implements PanelFactory {
                     ? (String) achievement.get("icon")
                     : (String) achievement.get("iconGray");
 
-            // Scale the icon image
             try {
-                ImageIcon icon = new ImageIcon(new URL(iconUrl));
-                Image image = icon.getImage();
-                Image scaledImage = image.getScaledInstance(50, 50, Image.SCALE_SMOOTH); // Scale to 50x50 pixels
-                JLabel iconLabel = new JLabel(new ImageIcon(scaledImage));
+                ImageIcon icon = ImageUtil.getScaledImageIcon(iconUrl, 50, 50);
+                JLabel iconLabel = new JLabel(icon);
                 achievementPanel.add(iconLabel, BorderLayout.WEST);
             } catch (Exception ex) {
                 JLabel iconLabel = new JLabel("Icon not available");
@@ -68,4 +72,48 @@ public class AchievementPanelFactory implements PanelFactory {
 
         return achievementsContainer;
     }
+
+    public void displayNoAchievementsMessage(String gameName, String imageUrl, JPanel achievementsPanel) {
+        try {
+            // Crear el JLabel para el mensaje
+            JLabel messageLabel = new JLabel("No se encuentran logros para " + gameName, SwingConstants.CENTER);
+            messageLabel.setFont(new Font("Arial", Font.PLAIN, 20)); // Configurar la fuente
+            messageLabel.setForeground(Color.RED); // Establecer el color del texto
+
+            // Cargar la imagen desde la URL
+            System.out.println("Loading image from URL: " + imageUrl); // Log the URL
+            ImageIcon imageIcon = new ImageIcon(new URL(imageUrl));
+            Image scaledImage = imageIcon.getImage().getScaledInstance(400, 400, Image.SCALE_SMOOTH);
+            ImageIcon scaledIcon = new ImageIcon(scaledImage);
+
+            // Configurar el JLabel con imagen
+            messageLabel.setIcon(scaledIcon);
+            messageLabel.setHorizontalTextPosition(SwingConstants.CENTER);
+            messageLabel.setVerticalTextPosition(SwingConstants.BOTTOM);
+
+            // Añadir el JLabel al panel de logros
+            if (achievementsPanel != null) {
+                achievementsPanel.removeAll();
+                achievementsPanel.setLayout(new BorderLayout());
+                achievementsPanel.add(messageLabel, BorderLayout.CENTER); // Centrar el contenido
+
+                // Actualizar el panel
+                achievementsPanel.revalidate();
+                achievementsPanel.repaint();
+            }
+        } catch (Exception e) {
+            JLabel errorLabel = new JLabel("No se pudo cargar la imagen.", SwingConstants.CENTER);
+            errorLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+            errorLabel.setForeground(Color.RED);
+
+            if (achievementsPanel != null) {
+                achievementsPanel.removeAll();
+                achievementsPanel.add(errorLabel, BorderLayout.CENTER); // Centrar el mensaje de error
+                achievementsPanel.revalidate();
+                achievementsPanel.repaint();
+            }
+            e.printStackTrace();
+        }
+    }
+
 }

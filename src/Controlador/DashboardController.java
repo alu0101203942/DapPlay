@@ -5,21 +5,19 @@ import com.lukaspradel.steamapi.data.json.ownedgames.Game;
 import com.lukaspradel.steamapi.data.json.playersummaries.Player;
 import src.Modelo.API.YoutubeApiService;
 import src.Modelo.Data.*;
-import src.Modelo.Sort.SortStrategy;
+import src.Modelo.Sort.*;
 import src.Modelo.API.SteamApiService;
 import src.Vista.MainViews.DashboardView;
-import src.Vista.PanelF.GameplayPanel;
 import src.Vista.ViewManager;
 
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class DashboardController {
     private final SteamApiService steamApiService;
     private final FavoritesManager favoritesManager;
-    private final SortStrategy sortStrategy;
+    private  SortStrategy sortStrategy;
     private final String username;
     private final ViewManager viewManager;
     private final YoutubeApiService youtubeApiService;
@@ -74,7 +72,6 @@ public class DashboardController {
         }
     }
 
-
     private void fetchGames() {
         try {
             String steamId64;
@@ -115,6 +112,17 @@ public class DashboardController {
         view.nextButton.addActionListener(e -> nextPage());
         view.prevButton.addActionListener(e -> prevPage());
         view.chartTypeComboBox.addActionListener(e -> chartController.updateChart());
+        view.sortComboBox.addActionListener(e -> updateSortStrategy());
+    }
+
+    private void updateSortStrategy() {
+        String selectedStrategy = (String) dashboardView.sortComboBox.getSelectedItem();
+        if ("Sort by Name".equals(selectedStrategy)) {
+            sortStrategy = new SortByName();
+        } else if ("Sort by Playtime".equals(selectedStrategy)) {
+            sortStrategy = new SortByPlaytime();
+        }
+        displayPage();
     }
 
 
@@ -143,10 +151,8 @@ public class DashboardController {
 
     public void viewGameplay(Game game) {
         try {
-            // Llamar al servicio de YouTube y obtener gameplays
             List<GameplayModel> gameplays = youtubeApiService.searchLatestVideosByGame(game.getName());
             if (!gameplays.isEmpty()) {
-                // Actualizar la vista con los gameplays
                 viewManager.updateGameplayPanel(gameplays);
             } else {
                 viewManager.showError("No se encontraron gameplays para este juego.");

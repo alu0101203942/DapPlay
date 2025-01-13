@@ -3,9 +3,12 @@ package src.Controlador;
 import com.lukaspradel.steamapi.data.json.ownedgames.Game;
 import src.Modelo.API.SteamApiService;
 import src.Vista.MainViews.DashboardView;
+import src.Vista.PanelF.AchievementPanelFactory;
 import src.Vista.ViewManager;
 
 import javax.swing.*;
+import java.awt.*;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -73,9 +76,48 @@ public class AchievementsController {
             viewManager.displayAchievements(unlockedAchievements, lockedAchievements);
 
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(dashboardView.frame,
-                    "Error loading achievements for " + selectedGame.getName() + ": " + e.getMessage(),
-                    "Error", JOptionPane.ERROR_MESSAGE);
+//            JOptionPane.showMessageDialog(dashboardView.frame,
+//                    "Error loading achievements for " + selectedGame.getName() + ": " + e.getMessage(),
+//                    "Error", JOptionPane.ERROR_MESSAGE);
+            handleNoAchievements(selectedGame.getName(), dashboardView); // Llama a la función desde el controlador
         }
     }
+
+    public void handleNoAchievements(String gameName, DashboardView dashboardView) {
+        String imageUrl = "https://raw.githubusercontent.com/alu0101203942/DapPlay/refs/heads/main/error.jpg"; // Enlace de la imagen
+        JPanel achievementsPanel = dashboardView.getAchievementsPanel();
+        AchievementPanelFactory factory = new AchievementPanelFactory();
+        factory.displayNoAchievementsMessage(gameName, imageUrl, achievementsPanel);
+    }
+
+
+    public Map<String, Integer> getUnlockedAchievements(String steamId64, List<Game> games) {
+        Map<String, Integer> unlockedAchievementsCount = new HashMap<>();
+
+        for (Game game : games) {
+            try {
+                List<Map<String, Object>> rawAchievements = SteamApiService.fetchAchievements(
+                        steamId64,
+                        String.valueOf(game.getAppid()),
+                        steamApiService.getApiKey()
+                );
+
+                int unlockedCount = 0;
+                for (Map<String, Object> rawAchievement : rawAchievements) {
+                    int achieved = (int) rawAchievement.get("achieved");
+                    if (achieved == 1) {
+                        unlockedCount++;
+                    }
+                }
+
+                unlockedAchievementsCount.put(game.getName(), unlockedCount);
+            } catch (Exception e) {
+                System.out.println("Error al obtener logros para " + game.getName() + ": " + e.getMessage());
+            }
+        }
+
+        return unlockedAchievementsCount;
+    }
+
+
 }

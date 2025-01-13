@@ -25,6 +25,13 @@ public class ChartController {
         setupListeners();
     }
 
+    private void onFavoritesChanged(List<Game> updatedFavorites) {
+        isUpdatingFromFavorites = true; // Marca que la actualización proviene de favoritos
+        System.out.println("Favoritos actualizados: " + updatedFavorites.size());
+        updateChart();
+        isUpdatingFromFavorites = false; // Restaura el estado
+    }
+
     // Configurar los listeners para el JComboBox (tipos de gráficos)
     private void setupListeners() {
         dashboardView.chartTypeComboBox.addActionListener(e -> {
@@ -34,20 +41,11 @@ public class ChartController {
         });
     }
 
-    // Método invocado cuando cambian los favoritos
-    private void onFavoritesChanged(List<Game> updatedFavorites) {
-        isUpdatingFromFavorites = true; // Marca que la actualización proviene de favoritos
-        System.out.println("Favoritos actualizados: " + updatedFavorites.size());
-        updateChart();
-        isUpdatingFromFavorites = false; // Restaura el estado
-    }
-
-    // Actualizar el gráfico basado en el tipo seleccionado
-    public void updateChart() {
+    public void updateChart() { // Actualizar el gráfico basado en el tipo seleccionado
         String selectedChartType = (String) dashboardView.chartTypeComboBox.getSelectedItem();
         List<Game> favoriteGames = favoritesManager.getFavoriteGames();
 
-        dashboardView.statsPanel.removeAll(); // Limpia el panel antes de actualizar
+        dashboardView.statsPanel.removeAll(); // Limpiar antes de actualizar
 
         if (favoriteGames.isEmpty()) {
             JLabel noDataLabel = new JLabel("No hay juegos favoritos para mostrar.", SwingConstants.CENTER);
@@ -78,4 +76,5 @@ public class ChartController {
             ex.printStackTrace();
         }
     }
+
 }

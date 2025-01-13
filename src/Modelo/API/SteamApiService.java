@@ -38,6 +38,10 @@ public class SteamApiService {
         return instance;
     }
 
+    public static SteamApiService createInstance(String apiKey) {
+        return new SteamApiService(apiKey);
+    }
+
     public String getSteamIdFromUsername(String username) throws SteamApiException {
         try {
             String url = "http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=" + apiKey + "&vanityurl=" + username;

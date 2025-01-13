@@ -1,6 +1,7 @@
 package src.Vista.MainViews;
 
 import com.formdev.flatlaf.FlatDarkLaf;
+import src.Vista.PanelF.AchievementPanelFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,6 +15,7 @@ public class DashboardView {
     public JComboBox<String> chartTypeComboBox;
     public JLabel avatarLabel, usernameLabel, gamesCountLabel, profileStatusLabel, connectionStatusLabel;
     public JButton viewProfileButton;
+
 
     public DashboardView() {
         // Set FlatDarkLaf look and feel
@@ -194,4 +196,9 @@ public class DashboardView {
     public void show() {
         frame.setVisible(true);
     }
+
+    public JPanel getAchievementsPanel() {
+        return achievementsPanel;
+    }
+
 }
