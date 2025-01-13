@@ -2,7 +2,7 @@ package src.Modelo.API;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import src.Modelo.Data.VideoData;
+import src.Modelo.Data.GameplayModel;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -30,9 +30,10 @@ public class YoutubeApiService {
         return apiKey;
     }
 
-    public List<VideoData> searchLatestVideosByGame(String gameName) throws Exception {
+    public List<GameplayModel> searchLatestVideosByGame(String gameName) throws Exception {
+        // Construye la URL con el parámetro "order=date" para obtener los videos más recientes
         String urlString = String.format(
-                "https://www.googleapis.com/youtube/v3/search?part=snippet&q=%s+gameplay&type=video&maxResults=5&key=%s",
+                "https://www.googleapis.com/youtube/v3/search?part=snippet&q=%s+gameplay&type=video&maxResults=5&order=date&key=%s",
                 gameName.replace(" ", "%20"), apiKey);
         URL url = new URL(urlString);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -48,22 +49,40 @@ public class YoutubeApiService {
             }
             in.close();
 
+            // Procesa la respuesta JSON
             JSONObject jsonResponse = new JSONObject(response.toString());
             JSONArray items = jsonResponse.getJSONArray("items");
-            List<VideoData> videoDataList = new ArrayList<>();
+            List<GameplayModel> videoDataList = new ArrayList<>();
 
             for (int i = 0; i < items.length(); i++) {
                 JSONObject video = items.getJSONObject(i);
+
+                // Obtener ID del video
                 String videoId = video.getJSONObject("id").getString("videoId");
                 String videoUrl = "https://www.youtube.com/watch?v=" + videoId;
-                String thumbnailUrl = "https://img.youtube.com/vi/" + videoId + "/hqdefault.jpg";
-                videoDataList.add(new VideoData(videoUrl, thumbnailUrl));
+
+                // Obtener título y descripción
+                JSONObject snippet = video.getJSONObject("snippet");
+                String title = snippet.getString("title").toLowerCase();
+                String description = snippet.optString("description", "").toLowerCase();
+
+                // Verificar si el título o la descripción contienen palabras clave relacionadas con gameplays
+                if (title.contains("gameplay") || description.contains("gameplay")) {
+                    String thumbnailUrl = "https://img.youtube.com/vi/" + videoId + "/hqdefault.jpg";
+                    videoDataList.add(new GameplayModel(videoUrl, thumbnailUrl));
+                }
             }
+
+            if (videoDataList.isEmpty()) {
+                throw new Exception("No se encontraron videos de gameplay relevantes para este juego.");
+            }
+
             return videoDataList;
         } else {
             throw new Exception("Error: Código de respuesta " + responseCode);
         }
     }
+
 
 
 }
