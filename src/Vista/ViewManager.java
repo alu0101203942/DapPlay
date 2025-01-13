@@ -6,9 +6,10 @@ import com.lukaspradel.steamapi.data.json.playersummaries.Player;
 import src.Controlador.AchievementsController;
 import src.Controlador.GameplayController;
 import src.Controlador.DashboardController;
+import src.Modelo.API.YoutubeApiService;
 import src.Modelo.Data.FavoritesManager;
 import com.lukaspradel.steamapi.data.json.ownedgames.Game;
-import src.Modelo.Data.VideoData;
+import src.Modelo.Data.GameplayModel;
 import src.Vista.MainViews.DashboardView;
 import src.Vista.PanelF.*;
 
@@ -30,12 +31,13 @@ public class ViewManager {
     private GameplayController gameplayController; // Cambiar a variable de instancia
     private final AchievementsController achievementsController;
 
-    public ViewManager(DashboardView view, DashboardController dashboardController, AchievementsController achievementsController) {
+    public ViewManager(DashboardView view, DashboardController dashboardController, AchievementsController achievementsController, YoutubeApiService youtubeApiService) {
         this.dashboardView = view;
         this.dashboardController = dashboardController;
-        this.gameplayController = gameplayController;
+        this.gameplayController = new GameplayController(youtubeApiService);
         this.achievementsController = achievementsController;
     }
+
 
     public void setGameplayController(GameplayController gameplayController) {
         this.gameplayController = gameplayController;
@@ -74,47 +76,91 @@ public class ViewManager {
         dashboardView.achievementsPanel.repaint();
     }
 
-    public void updateChart(String chartType, List<Game> favoriteGames) {
-        // Limpiar el panel actual
-        dashboardView.statsPanel.removeAll();
-        dashboardView.statsPanel.add(dashboardView.chartTypeComboBox, BorderLayout.NORTH);
+//    public void updateChart(String chartType, List<Game> favoriteGames) {
+//        // Limpiar el panel actual
+//        dashboardView.statsPanel.removeAll();
+//        dashboardView.statsPanel.add(dashboardView.chartTypeComboBox, BorderLayout.NORTH);
+//
+//        // Crear el gráfico con el ChartPanelFactory
+//        ChartPanelFactory chartPanelFactory = new ChartPanelFactory();
+//        JPanel chartPanel = chartPanelFactory.createChart(chartType, favoriteGames);
+//
+//        // Agregar un MouseListener al panel del gráfico
+//        chartPanel.addMouseListener(new java.awt.event.MouseAdapter() {
+//            @Override
+//            public void mouseClicked(java.awt.event.MouseEvent e) {
+//                // Mostrar el gráfico en una ventana emergente al hacer clic
+//                showChartInNewWindow(chartPanel);
+//            }
+//        });
+//
+//        // Agregar el gráfico al panel principal
+//        dashboardView.statsPanel.add(chartPanel, BorderLayout.CENTER);
+//
+//        // Refrescar la interfaz
+//        dashboardView.statsPanel.revalidate();
+//        dashboardView.statsPanel.repaint();
+//    }
+//
+//    private void showChartInNewWindow(JPanel chartPanel) {
+//        // Crear un nuevo JFrame para mostrar el gráfico
+//        JFrame frame = new JFrame("Gráfico Ampliado");
+//        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Cerrar solo la ventana del gráfico
+//        frame.setSize(800, 600); // Tamaño de la ventana
+//
+//        // Crear un contenedor para el gráfico
+//        JPanel enlargedChartPanel = new JPanel(new BorderLayout());
+//        enlargedChartPanel.add(chartPanel, BorderLayout.CENTER); // Agregar el gráfico al panel
+//
+//        // Agregar el panel al frame
+//        frame.add(enlargedChartPanel);
+//
+//        // Mostrar la ventana
+//        frame.setVisible(true);
+//    }
 
-        // Crear el gráfico con el ChartPanelFactory
-        ChartPanelFactory chartPanelFactory = new ChartPanelFactory();
-        JPanel chartPanel = chartPanelFactory.createChart(chartType, favoriteGames);
+    // In src/Vista/ViewManager.java
 
-        // Agregar un MouseListener al panel del gráfico
-        chartPanel.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseClicked(java.awt.event.MouseEvent e) {
-                // Mostrar el gráfico en una ventana emergente al hacer clic
-                showChartInNewWindow(chartPanel);
+    public void updateGameplayPanel(List<GameplayModel> gameplays) {
+        dashboardView.gameplayPanel.removeAll();
+        dashboardView.gameplayPanel.setLayout(new BoxLayout(dashboardView.gameplayPanel, BoxLayout.Y_AXIS));
+
+        for (GameplayModel gameplay : gameplays) {
+            JPanel videoPanel = new JPanel(new BorderLayout());
+            videoPanel.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(Color.GRAY, 1),
+                    BorderFactory.createEmptyBorder(10, 10, 10, 10)
+            ));
+            videoPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 120)); // Adjust the height of each panel
+
+            // Thumbnail
+            try {
+                URL thumbnailUrl = new URL(gameplay.getThumbnailUrl());
+                ImageIcon thumbnailIcon = new ImageIcon(thumbnailUrl);
+                Image scaledImage = thumbnailIcon.getImage().getScaledInstance(120, 90, Image.SCALE_SMOOTH);
+                JLabel thumbnailLabel = new JLabel(new ImageIcon(scaledImage));
+                videoPanel.add(thumbnailLabel, BorderLayout.WEST);
+            } catch (Exception ex) {
+                JLabel thumbnailLabel = new JLabel("Thumbnail not available");
+                videoPanel.add(thumbnailLabel, BorderLayout.WEST);
             }
-        });
 
-        // Agregar el gráfico al panel principal
-        dashboardView.statsPanel.add(chartPanel, BorderLayout.CENTER);
+            // Button to open in browser
+            JButton videoButton = new JButton("Open in browser");
+            videoButton.addActionListener(event -> {
+                try {
+                    Desktop.getDesktop().browse(new URL(gameplay.getVideoUrl()).toURI());
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(dashboardView.gameplayPanel, "Error opening link: " + ex.getMessage());
+                }
+            });
+            videoPanel.add(videoButton, BorderLayout.CENTER);
 
-        // Refrescar la interfaz
-        dashboardView.statsPanel.revalidate();
-        dashboardView.statsPanel.repaint();
-    }
+            dashboardView.gameplayPanel.add(videoPanel);
+        }
 
-    private void showChartInNewWindow(JPanel chartPanel) {
-        // Crear un nuevo JFrame para mostrar el gráfico
-        JFrame frame = new JFrame("Gráfico Ampliado");
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Cerrar solo la ventana del gráfico
-        frame.setSize(800, 600); // Tamaño de la ventana
-
-        // Crear un contenedor para el gráfico
-        JPanel enlargedChartPanel = new JPanel(new BorderLayout());
-        enlargedChartPanel.add(chartPanel, BorderLayout.CENTER); // Agregar el gráfico al panel
-
-        // Agregar el panel al frame
-        frame.add(enlargedChartPanel);
-
-        // Mostrar la ventana
-        frame.setVisible(true);
+        dashboardView.gameplayPanel.revalidate();
+        dashboardView.gameplayPanel.repaint();
     }
 
 
@@ -140,15 +186,16 @@ public class ViewManager {
 
             // Botón para ver logros
             JButton achievementsButton = new JButton("View Achievements");
-            // public void fetchAchievements(String steamId64, DashboardView dashboardView, Game selectedGame, ViewManager viewManager)
-            achievementsButton.addActionListener(e -> achievementsController.fetchAchievements(dashboardController.getUsername(), dashboardView, game, this));
-            buttonsPanel.add(achievementsButton); // Agregar al panel de botones
+            achievementsButton.addActionListener(e -> {
+                String steamId64 = dashboardController.getUsername(); // Obtener el Steam ID del usuario
+                dashboardController.fetchAchievements(steamId64, game);
+            });
+            buttonsPanel.add(achievementsButton);
 
             // Botón para ver gameplay
             JButton gameplayButton = new JButton("View Gameplay");
-            //gameplayButton.addActionListener(e -> dashboardController.viewGameplay(game));
-            gameplayButton.addActionListener(e -> gameplayController.fetchGameplays(game.getName()));
-            buttonsPanel.add(gameplayButton); // Agregar al panel de botones
+            gameplayButton.addActionListener(e -> dashboardController.viewGameplay(game)); // Llama al método centralizado en el DashboardController
+            buttonsPanel.add(gameplayButton);
 
             // Agregar el panel de botones al sur del gamePanel
             gamePanel.add(buttonsPanel, BorderLayout.SOUTH);
@@ -199,7 +246,45 @@ public class ViewManager {
         dashboardView.favoritesPanel.revalidate();
         dashboardView.favoritesPanel.repaint();
     }
+
+
+//    public void updateAchievementsPanel(List<GameplayModel> achievements) {
+//        dashboardView.achievementsPanel.removeAll();
+//        dashboardView.achievementsPanel.setLayout(new BoxLayout(dashboardView.achievementsPanel, BoxLayout.Y_AXIS));
+//
+//        for (GameplayModel model : achievements) {
+//            JLabel achievementLabel = new JLabel(model.getVideoUrl()); // Placeholder
+//            dashboardView.achievementsPanel.add(achievementLabel);
+//        }
+//
+//        dashboardView.achievementsPanel.revalidate();
+//        dashboardView.achievementsPanel.repaint();
+//    }
+
+
+
 }
+//
+//    public void displayFriends(List<Player> friends) {
+//        dashboardView.friendsPanel.removeAll();
+//        dashboardView.friendsPanel.setLayout(new BorderLayout());
+//
+//        JPanel friendsListPanel = new JPanel();
+//        friendsListPanel.setLayout(new BoxLayout(friendsListPanel, BoxLayout.Y_AXIS));
+//        FriendPanelFactory friendPanelFactory = new FriendPanelFactory();
+//
+//        for (Player friend : friends) {
+//            JPanel friendPanel = friendPanelFactory.createPanel(friend);
+//            friendsListPanel.add(friendPanel);
+//        }
+//
+//        JScrollPane scrollPane = new JScrollPane(friendsListPanel);
+//        scrollPane.setPreferredSize(new Dimension(dashboardView.friendsPanel.getWidth(), 4 * 100));
+//        dashboardView.friendsPanel.add(scrollPane, BorderLayout.CENTER);
+//
+//        dashboardView.friendsPanel.revalidate();
+//        dashboardView.friendsPanel.repaint();
+//    }
 
 //    public void displayAchievements(List<Map<String, Object>> unlockedAchievements, List<Map<String, Object>> lockedAchievements) throws MalformedURLException {
 //        dashboardView.achievementsPanel.removeAll();
@@ -215,6 +300,21 @@ public class ViewManager {
 //
 //        dashboardView.achievementsPanel.revalidate();
 //        dashboardView.achievementsPanel.repaint();
+//    }
+
+//    public void updateFavorites(List<Game> updatedGames, FavoritesManager favoritesManager) {
+//        dashboardView.favoritesPanel.removeAll();
+//        FavoritePanelFactory favoritePanelFactory = new FavoritePanelFactory();
+//
+//        List<Game> favoriteGames = favoritesManager.getFavoriteGames();
+//
+//        for (Game game : favoriteGames) {
+//            JPanel favoritePanel = favoritePanelFactory.createPanel(game, e -> favoritesManager.removeFavorite(game)); // Añadir lógica para eliminar
+//            dashboardView.favoritesPanel.add(favoritePanel);
+//        }
+//        updateChart(Objects.requireNonNull(dashboardView.chartTypeComboBox.getSelectedItem()).toString(), favoriteGames);
+//        dashboardView.favoritesPanel.revalidate();
+//        dashboardView.favoritesPanel.repaint();
 //    }
 //
 //    public void updateChart(String chartType, List<Game> favoriteGames) {

@@ -8,12 +8,13 @@ import src.Modelo.Data.*;
 import src.Modelo.Sort.SortStrategy;
 import src.Modelo.API.SteamApiService;
 import src.Vista.MainViews.DashboardView;
+import src.Vista.PanelF.GameplayPanel;
 import src.Vista.ViewManager;
-
 
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DashboardController {
     private final SteamApiService steamApiService;
@@ -23,9 +24,10 @@ public class DashboardController {
     private final ViewManager viewManager;
     private final YoutubeApiService youtubeApiService;
     private final UserModel user;
-    private  DashboardView dashboardView;
+    private DashboardView dashboardView;
     private AchievementsController achievementsController;
-
+    private GameplayController gameplayController;
+    private UserController userController;
 
     private int currentPage = 0;
     private static final int PAGE_SIZE = 6;
@@ -40,11 +42,17 @@ public class DashboardController {
         this.username = username;
         this.youtubeApiService = youtubeApiService;
         this.user = user;
+        this.dashboardView = view; // Initialize dashboardView
         this.dashboardView = view;
 
-        // Crear GameplayController
-        GameplayController gameplayController = new GameplayController(youtubeApiService);
+        // Create GameplayController
+        this.gameplayController = new GameplayController(youtubeApiService); // Initialize class-level variable
         achievementsController = new AchievementsController(steamApiService);
+        new ChartController(dashboardView, favoritesManager);
+        userController = new UserController(view, user);
+
+        // Create ViewManager with DashboardController and GameplayController
+        this.viewManager = new ViewManager(view, this, achievementsController, youtubeApiService);
         // Crear ViewManager con DashboardController y GameplayController
         this.viewManager = new ViewManager(view, this, achievementsController);
         favoritesManager.addObserver(updatedGames -> viewManager.updateFavorites(updatedGames, favoritesManager));
@@ -53,20 +61,24 @@ public class DashboardController {
         fetchGames();
         fetchFriends();
 
-
-        // Configurar listeners
+        // Setup listeners
         setupListeners(view);
     }
 
     private void updateChart() {
         String selectedType = (String) dashboardView.chartTypeComboBox.getSelectedItem();
-        viewManager.updateChart(selectedType, favoritesManager.getFavoriteGames());
+        //viewManager.updateChart(selectedType, favoritesManager.getFavoriteGames());
     }
 
-    private void fetchAndDisplayUserInfo() {
-        UserController userController = new UserController(user, viewManager);
-        userController.fetchAndDisplayUserInfo(username);
+    public void fetchAndDisplayUserInfo() {
+        try {
+            user.loadUserData(username);
+            userController.displayUserInfo();
+        } catch (Exception e) {
+            viewManager.showError("Error al cargar información del usuario: " + e.getMessage());
+        }
     }
+
 
     private void fetchGames() {
         try {
@@ -84,6 +96,9 @@ public class DashboardController {
         }
     }
 
+    public void fetchAchievements(String steamId64, Game selectedGame) {
+        achievementsController.fetchAchievements(steamId64, dashboardView, selectedGame, viewManager);
+    }
     private void fetchFriends() {
         try {
             String steamId64;
@@ -129,6 +144,21 @@ public class DashboardController {
     private void displayPage() {
         sortStrategy.sort(games);
         viewManager.displayGames(games, currentPage, PAGE_SIZE, favoritesManager);
+    }
+
+    public void viewGameplay(Game game) {
+        try {
+            // Llamar al servicio de YouTube y obtener gameplays
+            List<GameplayModel> gameplays = youtubeApiService.searchLatestVideosByGame(game.getName());
+            if (!gameplays.isEmpty()) {
+                // Actualizar la vista con los gameplays
+                viewManager.updateGameplayPanel(gameplays);
+            } else {
+                viewManager.showError("No se encontraron gameplays para este juego.");
+            }
+        } catch (Exception e) {
+            viewManager.showError("Error al cargar gameplays: " + e.getMessage());
+        }
     }
 
 }

@@ -45,7 +45,7 @@ public class DashboardView {
         avatarLabel.setPreferredSize(new Dimension(100, 100));
 
         // Panel para el texto
-        usernameLabel = new JLabel("Nombre: Lecxyu");
+        usernameLabel = new JLabel("Nombre:");
         gamesCountLabel = new JLabel("Juegos: 410");
         profileStatusLabel = new JLabel("Estado del Perfil: Público");
         connectionStatusLabel = new JLabel("Conexión: Online");
