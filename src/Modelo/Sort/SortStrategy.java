@@ -1,4 +1,4 @@
-package src.Modelo;
+package src.Modelo.Sort;
 
 import com.lukaspradel.steamapi.data.json.ownedgames.Game;
 

@@ -1,4 +1,4 @@
-package src.Vista;
+package src.Vista.ChartStrategy;
 
 import com.lukaspradel.steamapi.data.json.ownedgames.Game;
 import org.jfree.chart.ChartFactory;
@@ -13,11 +13,9 @@ public class PieChartStrategy implements ChartStrategy {
     @Override
     public JPanel createChart(List<Game> games) {
         DefaultPieDataset dataset = new DefaultPieDataset();
-
         for (Game game : games) {
             dataset.setValue(game.getName(), game.getPlaytimeForever() / 60.0);
         }
-
         JFreeChart chart = ChartFactory.createPieChart(
                 "Distribución de Horas Jugadas",
                 dataset,
@@ -25,7 +23,6 @@ public class PieChartStrategy implements ChartStrategy {
                 true,
                 false
         );
-
         return new ChartPanel(chart);
     }
 }

@@ -1,162 +1,111 @@
 package src.Controlador;
 
-import src.Modelo.*;
-import src.Modelo.SteamApiService;
-import src.Vista.DashboardView;
-import src.Vista.PanelFactory;
-
-import com.lukaspradel.steamapi.data.json.ownedgames.Game;
-
-import java.awt.*;
 import com.lukaspradel.steamapi.data.json.friendslist.Friend;
-import com.lukaspradel.steamapi.data.json.playersummaries.*;
-import java.util.List;
+import com.lukaspradel.steamapi.data.json.ownedgames.Game;
+import com.lukaspradel.steamapi.data.json.playersummaries.Player;
+import src.Modelo.API.YoutubeApiService;
+import src.Modelo.Data.*;
+import src.Modelo.Sort.*;
+import src.Modelo.API.SteamApiService;
+import src.Vista.MainViews.DashboardView;
+import src.Vista.ViewManager;
+
 import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
 
-
-public class DashboardController implements FavoritesObserver {
+public class DashboardController {
     private final SteamApiService steamApiService;
-    private final DashboardView dashboardView;
+    private final FavoritesManager favoritesManager;
+    private  SortStrategy sortStrategy;
     private final String username;
-    private List<Game> games;
-    private List<Friend> friends;
-    private List<Player> players;
+    private final ViewManager viewManager;
+    private final YoutubeApiService youtubeApiService;
+    private final UserModel user;
+    private DashboardView dashboardView;
+    private AchievementsController achievementsController;
+    private GameplayController gameplayController;
+    private UserController userController;
+    private ChartController chartController;
+
     private int currentPage = 0;
     private static final int PAGE_SIZE = 6;
-    private final FavoritesManager favoritesManager;
-    private SortStrategy sortStrategy;
+    private List<Game> games = new ArrayList<>();
 
-    public DashboardController(SteamApiService service, FavoritesManager favoritesManager, DashboardView view, SortStrategy sortStrategy, String username) {
+    public DashboardController(SteamApiService service, FavoritesManager favoritesManager, DashboardView view, SortStrategy sortStrategy, String username, YoutubeApiService youtubeApiService, UserModel user) {
         this.steamApiService = service;
         this.favoritesManager = favoritesManager;
-        this.dashboardView = view;
-        this.username = username;
         this.sortStrategy = sortStrategy;
+        this.username = username;
+        this.youtubeApiService = youtubeApiService;
+        this.user = user;
+        this.dashboardView = view;
 
-        favoritesManager.addObserver(this);
+        this.gameplayController = new GameplayController(youtubeApiService);
+        achievementsController = new AchievementsController(steamApiService);
+        new ChartController(dashboardView, favoritesManager);
+        chartController = new ChartController(view, favoritesManager);
 
+        this.viewManager = new ViewManager(view, this, achievementsController, youtubeApiService);
+        favoritesManager.addObserver(updatedGames -> viewManager.updateFavorites(updatedGames, favoritesManager));
+        userController = new UserController(dashboardView, user, viewManager);
+        fetchAndDisplayUserInfo();
         fetchGames();
         fetchFriends();
-        updateChart();
 
-        dashboardView.nextButton.addActionListener(e -> nextPage());
-        dashboardView.prevButton.addActionListener(e -> prevPage());
-        dashboardView.sortComboBox.addActionListener(e -> updateSortStrategy());
-        dashboardView.chartTypeComboBox.addActionListener(e -> updateChartType());
+        setupListeners(view);
+    }
+
+    public void fetchAndDisplayUserInfo() {
+        try {
+            user.loadUserData(username);
+            userController.displayUserInfo();
+        } catch (Exception e) {
+            viewManager.showError("Error al cargar información del usuario: " + e.getMessage());
+        }
     }
 
     private void fetchGames() {
         try {
-            String steamId64 = steamApiService.getSteamIdFromUsername(username);
+            String steamId64;
+            if (user.isSteamId64(username)) {
+                steamId64 = username;
+            } else {
+                steamId64 = steamApiService.getSteamIdFromUsername(username);
+            }
             games = steamApiService.getOwnedGames(steamId64);
             currentPage = 0;
             displayPage();
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(dashboardView.frame, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error fetching games: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private void displayPage() {
-        dashboardView.gamesPanel.removeAll();
-        dashboardView.gamesPanel.setLayout(new BorderLayout());
-        sortStrategy.sort(games);
-
-        JPanel gamesListPanel = new JPanel();
-        gamesListPanel.setLayout(new BoxLayout(gamesListPanel, BoxLayout.Y_AXIS));
-
-        int start = currentPage * PAGE_SIZE;
-        int end = Math.min(start + PAGE_SIZE, games.size());
-        for (int i = start; i < end; i++) {
-            Game game = games.get(i);
-            JPanel gamePanel = PanelFactory.createGamePanel(game, e -> favoritesManager.addFavorite(game));
-            gamesListPanel.add(gamePanel);
-        }
-
-        JScrollPane scrollPane = new JScrollPane(gamesListPanel);
-        scrollPane.setPreferredSize(new Dimension(dashboardView.gamesPanel.getWidth(), 6 * 200)); // Adjust height as needed
-        dashboardView.gamesPanel.add(scrollPane, BorderLayout.CENTER);
-
-        dashboardView.gamesPanel.revalidate();
-        dashboardView.gamesPanel.repaint();
-    }
-
-    private void updateChart() {
-        dashboardView.statsPanel.removeAll();
-        dashboardView.statsPanel.add(dashboardView.chartTypeComboBox, BorderLayout.NORTH);
-
-        String selectedType = (String) dashboardView.chartTypeComboBox.getSelectedItem();
-        JPanel chartPanel = PanelFactory.createChart(selectedType, favoritesManager.getFavoriteGames());
-
-        dashboardView.statsPanel.add(chartPanel, BorderLayout.CENTER);
-        dashboardView.statsPanel.revalidate();
-        dashboardView.statsPanel.repaint();
-    }
-
-    private void updateChartType() {
-        updateChart();
-    }
-
-
-    @Override
-    public void onFavoritesUpdated(List<Game> favoriteGames) {
-        dashboardView.favoritesPanel.removeAll();
-        for (Game game : favoriteGames) {
-            JPanel favoritePanel = PanelFactory.createFavoritePanel(game, e -> favoritesManager.removeFavorite(game));
-            dashboardView.favoritesPanel.add(favoritePanel);
-        }
-
-        dashboardView.favoritesPanel.revalidate();
-        dashboardView.favoritesPanel.repaint();
-        updateChart();
-    }
-
-    private void nextPage() {
-        if ((currentPage + 1) * PAGE_SIZE < games.size()) {
-            currentPage++;
-            displayPage();
-        } else {
-            JOptionPane.showMessageDialog(dashboardView.frame, "No more games to display.", "Info", JOptionPane.INFORMATION_MESSAGE);
-        }
-    }
-
-    private void prevPage() {
-        if (currentPage > 0) {
-            currentPage--;
-            displayPage();
-        } else {
-            JOptionPane.showMessageDialog(dashboardView.frame, "You are on the first page.", "Info", JOptionPane.INFORMATION_MESSAGE);
-        }
+    public void fetchAchievements(String steamId64, Game selectedGame) {
+        achievementsController.fetchAchievements(steamId64, dashboardView, selectedGame, viewManager);
     }
 
     private void fetchFriends() {
         try {
-            String steamId64 = steamApiService.getSteamIdFromUsername(username);
-            friends = steamApiService.getFriends(steamId64);
-            players = steamApiService.getPlayerSummaries(friends.toString());
-            displayFriends(players);
+            String steamId64;
+            if (user.isSteamId64(username)) {
+                steamId64 = username;
+            } else {
+                steamId64 = steamApiService.getSteamIdFromUsername(username);
+            }
+            List<Friend> friends = steamApiService.getFriends(steamId64);
+            List<Player> players = steamApiService.getPlayerSummaries(friends.toString());
+            viewManager.displayFriends(players);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(dashboardView.frame, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private void displayFriends(List<Player> friends) {
-        dashboardView.friendsPanel.removeAll();
-        dashboardView.friendsPanel.setLayout(new BorderLayout());
-
-        JPanel friendsListPanel = new JPanel();
-        friendsListPanel.setLayout(new BoxLayout(friendsListPanel, BoxLayout.Y_AXIS));
-
-        for (Player friend : friends) {
-            JPanel friendPanel = PanelFactory.createFriendPanel(friend);
-            friendsListPanel.add(friendPanel);
-        }
-
-        JScrollPane scrollPane = new JScrollPane(friendsListPanel);
-        scrollPane.setPreferredSize(new Dimension(dashboardView.friendsPanel.getWidth(), 4 * 100)); // Assuming each friend panel is 100px high
-        dashboardView.friendsPanel.add(scrollPane, BorderLayout.CENTER);
-
-        dashboardView.friendsPanel.revalidate();
-        dashboardView.friendsPanel.repaint();
+    private void setupListeners(DashboardView view) {
+        view.nextButton.addActionListener(e -> nextPage());
+        view.prevButton.addActionListener(e -> prevPage());
+        view.chartTypeComboBox.addActionListener(e -> chartController.updateChart());
+        view.sortComboBox.addActionListener(e -> updateSortStrategy());
     }
 
     private void updateSortStrategy() {
@@ -167,5 +116,41 @@ public class DashboardController implements FavoritesObserver {
             sortStrategy = new SortByPlaytime();
         }
         displayPage();
+    }
+
+    private void nextPage() {
+        if ((currentPage + 1) * PAGE_SIZE < games.size()) {
+            currentPage++;
+            viewManager.displayGames(games, currentPage, PAGE_SIZE, favoritesManager);
+        }
+    }
+
+    private void prevPage() {
+        if (currentPage > 0) {
+            currentPage--;
+            viewManager.displayGames(games, currentPage, PAGE_SIZE, favoritesManager);
+        }
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    private void displayPage() {
+        sortStrategy.sort(games);
+        viewManager.displayGames(games, currentPage, PAGE_SIZE, favoritesManager);
+    }
+
+    public void viewGameplay(Game game) {
+        try {
+            List<GameplayModel> gameplays = youtubeApiService.searchLatestVideosByGame(game.getName());
+            if (!gameplays.isEmpty()) {
+                viewManager.updateGameplayPanel(game);
+            } else {
+                viewManager.showError("No se encontraron gameplays para este juego.");
+            }
+        } catch (Exception e) {
+            viewManager.showError("Error al cargar gameplays: " + e.getMessage());
+        }
     }
 }
