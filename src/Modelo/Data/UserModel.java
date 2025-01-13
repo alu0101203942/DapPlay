@@ -1,6 +1,5 @@
 package src.Modelo.Data;
 
-import com.lukaspradel.steamapi.core.exception.SteamApiException;
 import com.lukaspradel.steamapi.data.json.playersummaries.Player;
 import src.Modelo.API.SteamApiService;
 
@@ -10,19 +9,10 @@ public class UserModel {
     private final SteamApiService steamApiService;
     private Player currentUser;
     private int ownedGamesCount;
-    private String username;
     private boolean userInfoLoaded;
 
     public UserModel(SteamApiService steamApiService) {
         this.steamApiService = steamApiService;
-    }
-
-    public boolean isUserInfoLoaded() {
-        return userInfoLoaded;
-    }
-
-    public int getGamesCount(String steamId64) throws SteamApiException {
-        return steamApiService.getOwnedProductsCount(steamId64);
     }
 
     public String getAvatarUrl() {
@@ -39,12 +29,11 @@ public class UserModel {
         if (!userInfoList.isEmpty()) {
             currentUser = userInfoList.get(0);
             ownedGamesCount = steamApiService.getOwnedProductsCount(steamId64);
-            userInfoLoaded = true; // Marca que los datos se han cargado correctamente
+            userInfoLoaded = true;
         } else {
             throw new Exception("No se encontró información del usuario.");
         }
     }
-
 
     public String getUsername() {
         if (!userInfoLoaded) {
@@ -52,7 +41,6 @@ public class UserModel {
         }
         return currentUser.getPersonaname();
     }
-
 
     public String getProfileStatus() {
         if (currentUser == null) {

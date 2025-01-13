@@ -26,12 +26,7 @@ public class YoutubeApiService {
         return instance;
     }
 
-    public String getApiKey() {
-        return apiKey;
-    }
-
     public List<GameplayModel> searchLatestVideosByGame(String gameName) throws Exception {
-        // Construye la URL con el parámetro "order=date" para obtener los videos más recientes
         String urlString = String.format(
                 "https://www.googleapis.com/youtube/v3/search?part=snippet&q=%s+gameplay&type=video&maxResults=5&order=date&key=%s",
                 gameName.replace(" ", "%20"), apiKey);
@@ -50,7 +45,6 @@ public class YoutubeApiService {
             }
             in.close();
 
-            // Procesa la respuesta JSON
             JSONObject jsonResponse = new JSONObject(response.toString());
             JSONArray items = jsonResponse.getJSONArray("items");
             List<GameplayModel> videoDataList = new ArrayList<>();
@@ -63,11 +57,9 @@ public class YoutubeApiService {
 
                 videoDataList.add(new GameplayModel(thumbnailUrl, videoUrl));
             }
-
             if (videoDataList.isEmpty()) {
                 throw new Exception("No se encontraron videos de gameplay relevantes para este juego.");
             }
-
             return videoDataList;
         } else {
             throw new Exception("Error: Código de respuesta " + responseCode);

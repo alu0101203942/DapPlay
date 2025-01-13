@@ -11,20 +11,16 @@ public class StartView {
     public JButton nextButton;
 
     public StartView() {
-        // Configurar el estilo visual
         try {
             UIManager.setLookAndFeel(new FlatDarkLaf());
         } catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
         }
-
-        // Configurar la ventana principal
         frame = new JFrame("Inicio - DapPlay");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(400, 200);
         frame.setLayout(new BorderLayout());
 
-        // Panel central para el ingreso del nombre de usuario
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -49,11 +45,12 @@ public class StartView {
         frame.add(panel, BorderLayout.CENTER);
     }
 
-
     public void show() {
         frame.setVisible(true);
     }
+
     public void hide() { frame.setVisible(false); }
+
     public void showError(String message) {
         JOptionPane.showMessageDialog(frame, message, "Error", JOptionPane.ERROR_MESSAGE);
     }

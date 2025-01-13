@@ -1,6 +1,6 @@
 package src.Modelo.Data;
-import com.lukaspradel.steamapi.data.json.ownedgames.Game;
 
+import com.lukaspradel.steamapi.data.json.ownedgames.Game;
 import java.util.ArrayList;
 import java.util.List;
 

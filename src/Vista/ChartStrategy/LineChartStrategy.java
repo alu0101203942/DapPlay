@@ -12,22 +12,16 @@ import java.util.List;
 public class LineChartStrategy implements ChartStrategy {
     @Override
     public JPanel createChart(List<Game> games) {
-        // Crear el dataset para el gráfico
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-
         for (Game game : games) {
             dataset.addValue(game.getPlaytimeForever() / 60.0, "Horas Jugadas", game.getName());
         }
-
-        // Crear el gráfico de líneas
         JFreeChart chart = ChartFactory.createLineChart(
-                "Horas Jugadas por Juego",   // Título del gráfico
-                "Juegos",                   // Etiqueta del eje X
-                "Horas",                    // Etiqueta del eje Y
-                dataset                     // Dataset
+                "Horas Jugadas por Juego",
+                "Juegos",
+                "Horas",
+                dataset
         );
-
-        // Retornar un ChartPanel que contiene el gráfico
         return new ChartPanel(chart);
     }
 }

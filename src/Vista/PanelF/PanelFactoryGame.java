@@ -1,4 +1,3 @@
-// src/Vista/PanelFactoryGame.java
 package src.Vista.PanelF;
 
 import com.lukaspradel.steamapi.data.json.ownedgames.Game;

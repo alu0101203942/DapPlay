@@ -13,23 +13,19 @@ public class GameplayModel {
         this.videoUrl = videoUrl;
     }
 
-    public String getThumbnailUrl() {
-        return thumbnailUrl;
-    }
-
     public String getVideoUrl() {
         return videoUrl;
     }
 
-    public String getScaledThumbnail(int width, int height) {
+    public ImageIcon getScaledThumbnail(int width, int height) {
         try {
             URL url = new URL(thumbnailUrl);
             ImageIcon icon = new ImageIcon(url);
             Image image = icon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
-            return new ImageIcon(image).toString();
+            return new ImageIcon(image);
         } catch (Exception e) {
             e.printStackTrace();
-            return "Thumbnail not available";
+            return null;
         }
     }
 }

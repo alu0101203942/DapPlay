@@ -1,8 +1,6 @@
 package src.Vista.MainViews;
 
 import com.formdev.flatlaf.FlatDarkLaf;
-import src.Vista.PanelF.AchievementPanelFactory;
-
 import javax.swing.*;
 import java.awt.*;
 
@@ -18,7 +16,6 @@ public class DashboardView {
 
 
     public DashboardView() {
-        // Set FlatDarkLaf look and feel
         try {
             UIManager.setLookAndFeel(new FlatDarkLaf());
         } catch (UnsupportedLookAndFeelException e) {
@@ -60,7 +57,6 @@ public class DashboardView {
         gbcText.fill = GridBagConstraints.HORIZONTAL;
         gbcText.insets = new Insets(5, 5, 5, 5);
 
-        // Añadir texto al panel de información
         gbcText.gridx = 0;
         gbcText.gridy = 0;
         gbcText.anchor = GridBagConstraints.CENTER;
@@ -78,7 +74,6 @@ public class DashboardView {
         gbcText.gridy = 4;
         userInfoPanel.add(viewProfileButton, gbcText);
 
-        // Combinar avatar y texto en un panel
         JPanel userContentPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbcContent = new GridBagConstraints();
 
@@ -92,8 +87,6 @@ public class DashboardView {
         gbcContent.gridy = 0;
         gbcContent.fill = GridBagConstraints.BOTH;
         userContentPanel.add(userInfoPanel, gbcContent);
-
-        // Añadir contenido al panel principal
         userPanel.add(userContentPanel, BorderLayout.CENTER);
 
         gbc.gridx = 0;

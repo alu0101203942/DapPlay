@@ -20,14 +20,11 @@ public class AchievementPanelFactory implements PanelFactory {
         JPanel achievementsContainer = new JPanel();
         achievementsContainer.setLayout(new BorderLayout());
         achievementsContainer.setBackground(new Color(33, 33, 33));
-
-        // Add title
         JLabel titleLabel = new JLabel(title);
         titleLabel.setForeground(titleColor);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
         achievementsContainer.add(titleLabel, BorderLayout.NORTH);
 
-        // Create achievements list
         JPanel achievementsListPanel = new JPanel();
         achievementsListPanel.setLayout(new BoxLayout(achievementsListPanel, BoxLayout.Y_AXIS));
         achievementsListPanel.setBackground(new Color(33, 33, 33));
@@ -75,29 +72,22 @@ public class AchievementPanelFactory implements PanelFactory {
 
     public void displayNoAchievementsMessage(String gameName, String imageUrl, JPanel achievementsPanel) {
         try {
-            // Crear el JLabel para el mensaje
             JLabel messageLabel = new JLabel("No se encuentran logros para " + gameName, SwingConstants.CENTER);
-            messageLabel.setFont(new Font("Arial", Font.PLAIN, 20)); // Configurar la fuente
-            messageLabel.setForeground(Color.RED); // Establecer el color del texto
-
-            // Cargar la imagen desde la URL
-            System.out.println("Loading image from URL: " + imageUrl); // Log the URL
+            messageLabel.setFont(new Font("Arial", Font.PLAIN, 20));
+            messageLabel.setForeground(Color.RED);
+            System.out.println("Loading image from URL: " + imageUrl);
             ImageIcon imageIcon = new ImageIcon(new URL(imageUrl));
             Image scaledImage = imageIcon.getImage().getScaledInstance(400, 400, Image.SCALE_SMOOTH);
             ImageIcon scaledIcon = new ImageIcon(scaledImage);
 
-            // Configurar el JLabel con imagen
             messageLabel.setIcon(scaledIcon);
             messageLabel.setHorizontalTextPosition(SwingConstants.CENTER);
             messageLabel.setVerticalTextPosition(SwingConstants.BOTTOM);
 
-            // Añadir el JLabel al panel de logros
             if (achievementsPanel != null) {
                 achievementsPanel.removeAll();
                 achievementsPanel.setLayout(new BorderLayout());
                 achievementsPanel.add(messageLabel, BorderLayout.CENTER); // Centrar el contenido
-
-                // Actualizar el panel
                 achievementsPanel.revalidate();
                 achievementsPanel.repaint();
             }

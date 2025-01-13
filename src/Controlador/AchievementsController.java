@@ -7,8 +7,6 @@ import src.Vista.PanelF.AchievementPanelFactory;
 import src.Vista.ViewManager;
 
 import javax.swing.*;
-import java.awt.*;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,11 +14,9 @@ import java.util.Map;
 
 public class AchievementsController {
     private final SteamApiService steamApiService;
-    //private final ViewManager viewManager;
 
     public AchievementsController(SteamApiService steamApiService) {
         this.steamApiService = steamApiService;
-        //this.viewManager = viewManager;
     }
 
     private boolean isSteamId64(String input) {
@@ -76,10 +72,7 @@ public class AchievementsController {
             viewManager.displayAchievements(unlockedAchievements, lockedAchievements);
 
         } catch (Exception e) {
-//            JOptionPane.showMessageDialog(dashboardView.frame,
-//                    "Error loading achievements for " + selectedGame.getName() + ": " + e.getMessage(),
-//                    "Error", JOptionPane.ERROR_MESSAGE);
-            handleNoAchievements(selectedGame.getName(), dashboardView); // Llama a la función desde el controlador
+            handleNoAchievements(selectedGame.getName(), dashboardView);
         }
     }
 
@@ -90,10 +83,8 @@ public class AchievementsController {
         factory.displayNoAchievementsMessage(gameName, imageUrl, achievementsPanel);
     }
 
-
     public Map<String, Integer> getUnlockedAchievements(String steamId64, List<Game> games) {
         Map<String, Integer> unlockedAchievementsCount = new HashMap<>();
-
         for (Game game : games) {
             try {
                 List<Map<String, Object>> rawAchievements = SteamApiService.fetchAchievements(
@@ -101,7 +92,6 @@ public class AchievementsController {
                         String.valueOf(game.getAppid()),
                         steamApiService.getApiKey()
                 );
-
                 int unlockedCount = 0;
                 for (Map<String, Object> rawAchievement : rawAchievements) {
                     int achieved = (int) rawAchievement.get("achieved");
@@ -109,15 +99,11 @@ public class AchievementsController {
                         unlockedCount++;
                     }
                 }
-
                 unlockedAchievementsCount.put(game.getName(), unlockedCount);
             } catch (Exception e) {
                 System.out.println("Error al obtener logros para " + game.getName() + ": " + e.getMessage());
             }
         }
-
         return unlockedAchievementsCount;
     }
-
-
 }

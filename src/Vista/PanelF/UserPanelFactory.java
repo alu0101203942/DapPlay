@@ -1,167 +1,78 @@
 package src.Vista.PanelF;
 
-import com.lukaspradel.steamapi.data.json.playersummaries.Player;
-import src.Modelo.ImageUtil;
+import src.Modelo.Data.UserModel;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 
 public class UserPanelFactory implements PanelFactoryUser {
-    private static final int MARGIN = 10;
-    ImageUtil imageUtil = new ImageUtil();
-
-    @Override
-    public JPanel createPanel(Player user, int games) {
-        // Crear el panel principal para el usuario
-        JPanel userPanel = new JPanel(new BorderLayout());
+    public JPanel createPanel(UserModel userModel) {
+        JPanel userPanel = new JPanel(new GridBagLayout());
         userPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(Color.GRAY, 1),
                 BorderFactory.createEmptyBorder(10, 10, 10, 10)
         ));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.gridx = 0;
 
-        // Avatar
         JLabel avatarLabel = new JLabel();
         try {
-            URL url = new URL(user.getAvatarfull());
-            ImageIcon avatarIcon = ImageUtil.getScaledImageIcon(url.toString(), 80, 80);
+            URL url = new URL(userModel.getAvatarUrl());
+            Image image = ImageIO.read(url);
+            ImageIcon avatarIcon = new ImageIcon(image.getScaledInstance(80, 80, Image.SCALE_SMOOTH));
             avatarLabel.setIcon(avatarIcon);
         } catch (Exception e) {
             avatarLabel.setText("No Avatar");
         }
         avatarLabel.setHorizontalAlignment(SwingConstants.CENTER);
         avatarLabel.setPreferredSize(new Dimension(80, 80));
+        gbc.gridy = 0;
+        userPanel.add(avatarLabel, gbc);
 
-        // Información del usuario
-        JPanel userInfoPanel = new JPanel();
-        userInfoPanel.setLayout(new BoxLayout(userInfoPanel, BoxLayout.Y_AXIS));
-
-        JLabel usernameLabel = new JLabel("Nombre: " + user.getPersonaname());
-        JLabel gamesCountLabel = new JLabel("Juegos: " + games);
-        JLabel profileStatusLabel = new JLabel("Estado del Perfil: " +
-                (user.getCommunityvisibilitystate() == 3 ? "Público" : "Privado"));
-        JLabel connectionStatusLabel = new JLabel("Conexión: " + mapConnectionStatus(user.getPersonastate().intValue()));
+        JLabel usernameLabel = new JLabel(userModel.getUsername(), SwingConstants.CENTER);
+        JLabel gamesCountLabel = new JLabel("Juegos: " + userModel.getOwnedGamesCount(), SwingConstants.CENTER);
+        JLabel profileStatusLabel = new JLabel("Estado del Perfil: " + userModel.getProfileStatus(), SwingConstants.CENTER);
+        JLabel connectionStatusLabel = new JLabel("Conexión: " + userModel.getConnectionStatus(), SwingConstants.CENTER);
 
         usernameLabel.setFont(new Font("Arial", Font.BOLD, 14));
         gamesCountLabel.setFont(new Font("Arial", Font.PLAIN, 12));
         profileStatusLabel.setFont(new Font("Arial", Font.PLAIN, 12));
         connectionStatusLabel.setFont(new Font("Arial", Font.PLAIN, 12));
 
-        userInfoPanel.add(usernameLabel);
-        userInfoPanel.add(gamesCountLabel);
-        userInfoPanel.add(profileStatusLabel);
-        userInfoPanel.add(connectionStatusLabel);
+        gbc.gridy = 1;
+        userPanel.add(usernameLabel, gbc);
+        gbc.gridy = 2;
+        userPanel.add(gamesCountLabel, gbc);
+        gbc.gridy = 3;
+        userPanel.add(profileStatusLabel, gbc);
+        gbc.gridy = 4;
+        userPanel.add(connectionStatusLabel, gbc);
 
-        // Botón para abrir perfil
         JButton viewProfileButton = new JButton("Ver Perfil en Steam");
         viewProfileButton.addActionListener(e -> {
             try {
-                String profileUrl = user.getProfileurl();
+                String profileUrl = userModel.getProfileUrl();
                 if (profileUrl == null || profileUrl.isEmpty()) {
-                    JOptionPane.showMessageDialog(userPanel, "La URL del perfil no está disponible.");
+                    JOptionPane.showMessageDialog(userPanel, "URL de perfil no válida o vacía.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                Desktop.getDesktop().browse(new URL(profileUrl).toURI());
+                if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                    Desktop.getDesktop().browse(new URI(profileUrl));
+                } else {
+                    JOptionPane.showMessageDialog(userPanel, "No se puede abrir el navegador en este sistema.", "Información", JOptionPane.INFORMATION_MESSAGE);
+                }
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(userPanel, "Error al abrir el perfil: " + ex.getMessage());
-                ex.printStackTrace();
+                JOptionPane.showMessageDialog(userPanel, "Error al abrir el perfil: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
-        userInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        userInfoPanel.add(viewProfileButton);
-
-        // Combinar avatar y texto en un solo panel
-        userPanel.add(avatarLabel, BorderLayout.WEST);
-        userPanel.add(userInfoPanel, BorderLayout.CENTER);
+        gbc.gridy = 5;
+        userPanel.add(viewProfileButton, gbc);
 
         return userPanel;
     }
-
-//    public JPanel createPanel(Player user, int games) {
-//        // Crear el panel principal para el usuario
-//        JPanel userPanel = new JPanel(new BorderLayout());
-//        userPanel.setBorder(BorderFactory.createCompoundBorder(
-//                BorderFactory.createLineBorder(Color.GRAY, 1),
-//                BorderFactory.createEmptyBorder(10, 10, 10, 10)
-//        ));
-//
-//        // Avatar
-//        JLabel avatarLabel = new JLabel();
-//        try {
-//            URL url = new URL(user.getAvatarfull());
-//            ImageIcon avatarIcon = ImageUtil.getScaledImageIcon(url.toString(), 80, 80);
-//            avatarLabel.setIcon(avatarIcon);
-//        } catch (Exception e) {
-//            avatarLabel.setText("No Avatar");
-//        }
-//        avatarLabel.setHorizontalAlignment(SwingConstants.CENTER);
-//        avatarLabel.setPreferredSize(new Dimension(80, 80));
-//
-//        // Información del usuario
-//        JPanel userInfoPanel = new JPanel();
-//        userInfoPanel.setLayout(new BoxLayout(userInfoPanel, BoxLayout.Y_AXIS));
-//
-//        JLabel usernameLabel = new JLabel("Nombre: " + user.getPersonaname());
-//        JLabel gamesCountLabel = new JLabel("Juegos: " + games);
-//        JLabel profileStatusLabel = new JLabel("Estado del Perfil: " +
-//                (user.getCommunityvisibilitystate() == 3 ? "Público" : "Privado"));
-//        JLabel connectionStatusLabel = new JLabel("Conexión: " + mapConnectionStatus(user.getPersonastate().intValue()));
-//
-//        usernameLabel.setFont(new Font("Arial", Font.BOLD, 14));
-//        gamesCountLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-//        profileStatusLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-//        connectionStatusLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-//
-//        userInfoPanel.add(usernameLabel);
-//        userInfoPanel.add(gamesCountLabel);
-//        userInfoPanel.add(profileStatusLabel);
-//        userInfoPanel.add(connectionStatusLabel);
-//
-//        // Botón para abrir perfil
-//        JButton viewProfileButton = new JButton("Ver Perfil en Steam");
-////        viewProfileButton.addActionListener(e -> {
-////            try {
-////                String profileUrl = user.getProfileurl();
-////                System.out.println("URL del perfil: " + profileUrl);
-////                if (profileUrl == null || profileUrl.isEmpty()) {
-////                    JOptionPane.showMessageDialog(userPanel, "La URL del perfil no está disponible.");
-////                    return;
-////                }
-////                Desktop.getDesktop().browse(new URL(profileUrl).toURI());
-////            } catch (Exception ex) {
-////                JOptionPane.showMessageDialog(userPanel, "Error al abrir el perfil: " + ex.getMessage());
-////                ex.printStackTrace();
-////            }
-////        });
-//        viewProfileButton.addActionListener(e -> {
-//            JOptionPane.showMessageDialog(userPanel, "El botón funciona, pero hay un problema al abrir el perfil.");
-//        });
-//        userInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-//        userInfoPanel.add(viewProfileButton);
-//
-//        // Combinar avatar y texto en un solo panel
-//        userPanel.add(avatarLabel, BorderLayout.WEST);
-//        userPanel.add(userInfoPanel, BorderLayout.CENTER);
-//
-//        return userPanel;
-//    }
-
-    private String mapConnectionStatus(int status) {
-        return switch (status) {
-            case 0 -> "Offline";
-            case 1 -> "Online";
-            case 2 -> "Busy";
-            case 3 -> "Away";
-            case 4 -> "Snooze";
-            case 5 -> "Looking to Trade";
-            case 6 -> "Looking to Play";
-            default -> "Unknown";
-        };
-    }
-
-
-
 }

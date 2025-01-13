@@ -32,8 +32,6 @@ public class DashboardController {
     private static final int PAGE_SIZE = 6;
     private List<Game> games = new ArrayList<>();
 
-
-
     public DashboardController(SteamApiService service, FavoritesManager favoritesManager, DashboardView view, SortStrategy sortStrategy, String username, YoutubeApiService youtubeApiService, UserModel user) {
         this.steamApiService = service;
         this.favoritesManager = favoritesManager;
@@ -43,23 +41,18 @@ public class DashboardController {
         this.user = user;
         this.dashboardView = view;
 
-        // Create GameplayController
-        this.gameplayController = new GameplayController(youtubeApiService); // Initialize class-level variable
+        this.gameplayController = new GameplayController(youtubeApiService);
         achievementsController = new AchievementsController(steamApiService);
         new ChartController(dashboardView, favoritesManager);
-        userController = new UserController(view, user);
         chartController = new ChartController(view, favoritesManager);
 
-        // Create ViewManager with DashboardController and GameplayController
         this.viewManager = new ViewManager(view, this, achievementsController, youtubeApiService);
-        // Crear ViewManager con DashboardController y GameplayController
         favoritesManager.addObserver(updatedGames -> viewManager.updateFavorites(updatedGames, favoritesManager));
-
+        userController = new UserController(dashboardView, user, viewManager);
         fetchAndDisplayUserInfo();
         fetchGames();
         fetchFriends();
 
-        // Setup listeners
         setupListeners(view);
     }
 
@@ -91,6 +84,7 @@ public class DashboardController {
     public void fetchAchievements(String steamId64, Game selectedGame) {
         achievementsController.fetchAchievements(steamId64, dashboardView, selectedGame, viewManager);
     }
+
     private void fetchFriends() {
         try {
             String steamId64;
@@ -106,7 +100,6 @@ public class DashboardController {
             JOptionPane.showMessageDialog(dashboardView.frame, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
 
     private void setupListeners(DashboardView view) {
         view.nextButton.addActionListener(e -> nextPage());
@@ -124,7 +117,6 @@ public class DashboardController {
         }
         displayPage();
     }
-
 
     private void nextPage() {
         if ((currentPage + 1) * PAGE_SIZE < games.size()) {
@@ -153,7 +145,7 @@ public class DashboardController {
         try {
             List<GameplayModel> gameplays = youtubeApiService.searchLatestVideosByGame(game.getName());
             if (!gameplays.isEmpty()) {
-                viewManager.updateGameplayPanel(gameplays);
+                viewManager.updateGameplayPanel(game);
             } else {
                 viewManager.showError("No se encontraron gameplays para este juego.");
             }
@@ -161,5 +153,4 @@ public class DashboardController {
             viewManager.showError("Error al cargar gameplays: " + e.getMessage());
         }
     }
-
 }
