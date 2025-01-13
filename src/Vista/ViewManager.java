@@ -164,28 +164,27 @@ public class ViewManager {
         dashboardView.gamesPanel.repaint();
     }
 
+    public void displayFriends(List<Player> friends) {
+        dashboardView.friendsPanel.removeAll();
+        dashboardView.friendsPanel.setLayout(new BorderLayout());
+
+        JPanel friendsListPanel = new JPanel();
+        friendsListPanel.setLayout(new BoxLayout(friendsListPanel, BoxLayout.Y_AXIS));
+        FriendPanelFactory friendPanelFactory = new FriendPanelFactory();
+
+        for (Player friend : friends) {
+            JPanel friendPanel = friendPanelFactory.createPanel(friend);
+            friendsListPanel.add(friendPanel);
+        }
+
+        JScrollPane scrollPane = new JScrollPane(friendsListPanel);
+        scrollPane.setPreferredSize(new Dimension(dashboardView.friendsPanel.getWidth(), 4 * 100));
+        dashboardView.friendsPanel.add(scrollPane, BorderLayout.CENTER);
+
+        dashboardView.friendsPanel.revalidate();
+        dashboardView.friendsPanel.repaint();
+    }
 }
-//
-//    public void displayFriends(List<Player> friends) {
-//        dashboardView.friendsPanel.removeAll();
-//        dashboardView.friendsPanel.setLayout(new BorderLayout());
-//
-//        JPanel friendsListPanel = new JPanel();
-//        friendsListPanel.setLayout(new BoxLayout(friendsListPanel, BoxLayout.Y_AXIS));
-//        FriendPanelFactory friendPanelFactory = new FriendPanelFactory();
-//
-//        for (Player friend : friends) {
-//            JPanel friendPanel = friendPanelFactory.createPanel(friend);
-//            friendsListPanel.add(friendPanel);
-//        }
-//
-//        JScrollPane scrollPane = new JScrollPane(friendsListPanel);
-//        scrollPane.setPreferredSize(new Dimension(dashboardView.friendsPanel.getWidth(), 4 * 100));
-//        dashboardView.friendsPanel.add(scrollPane, BorderLayout.CENTER);
-//
-//        dashboardView.friendsPanel.revalidate();
-//        dashboardView.friendsPanel.repaint();
-//    }
 
 //    public void displayAchievements(List<Map<String, Object>> unlockedAchievements, List<Map<String, Object>> lockedAchievements) throws MalformedURLException {
 //        dashboardView.achievementsPanel.removeAll();

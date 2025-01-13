@@ -1,6 +1,8 @@
 package src.Controlador;
 
+import com.lukaspradel.steamapi.data.json.friendslist.Friend;
 import com.lukaspradel.steamapi.data.json.ownedgames.Game;
+import com.lukaspradel.steamapi.data.json.playersummaries.Player;
 import src.Modelo.API.YoutubeApiService;
 import src.Modelo.Data.*;
 import src.Modelo.Sort.SortStrategy;
@@ -38,6 +40,7 @@ public class DashboardController {
         this.username = username;
         this.youtubeApiService = youtubeApiService;
         this.user = user;
+        this.dashboardView = view;
 
         // Crear GameplayController
         GameplayController gameplayController = new GameplayController(youtubeApiService);
@@ -47,6 +50,7 @@ public class DashboardController {
 
         fetchAndDisplayUserInfo();
         fetchGames();
+        fetchFriends();
 
 
         // Configurar listeners
@@ -78,6 +82,23 @@ public class DashboardController {
             JOptionPane.showMessageDialog(null, "Error fetching games: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
+    private void fetchFriends() {
+        try {
+            String steamId64;
+            if (user.isSteamId64(username)) {
+                steamId64 = username;
+            } else {
+                steamId64 = steamApiService.getSteamIdFromUsername(username);
+            }
+            List<Friend> friends = steamApiService.getFriends(steamId64);
+            List<Player> players = steamApiService.getPlayerSummaries(friends.toString());
+            viewManager.displayFriends(players);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(dashboardView.frame, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
 
     private void setupListeners(DashboardView view) {
         view.nextButton.addActionListener(e -> nextPage());
